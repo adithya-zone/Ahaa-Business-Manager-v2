@@ -1,0 +1,94 @@
+<div id="orderModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>Create Order</h2>
+
+            <button type="button" id="closeOrderModal">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="form-group">
+
+                <label>Customer Name</label>
+
+                <input
+                    type="text"
+                    id="customerName"
+                    placeholder="Walk-in Customer">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Select Product</label>
+
+                <select
+                    id="orderProduct"
+                    onchange="onProductChanged()">
+
+                    <option value="">Loading...</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Quantity</label>
+
+                <input
+                    type="number"
+                    id="orderQty"
+                    min="1"
+                    value="1"
+                    oninput="onQuantityChanged()">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Total</label>
+
+                <input
+                    type="text"
+                    id="orderTotal"
+                    readonly>
+
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                id="cancelOrderBtn">
+
+                Cancel
+
+            </button>
+
+            <button
+                type="button"
+                class="btn-primary"
+                id="saveOrderBtn">
+
+                Save Order
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>

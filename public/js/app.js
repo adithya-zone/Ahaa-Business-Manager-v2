@@ -180,6 +180,11 @@ async function init() {
         "components/productModal.html"
     );
 
+    await loadComponent(
+        "orderModalContainer",
+        "components/orderModal.html"
+    );
+
     bindMenu();
 
     loadPage("dashboard");

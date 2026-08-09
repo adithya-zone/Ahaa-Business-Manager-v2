@@ -615,3 +615,61 @@ body{
     background:#f39c12;
 
 }
+/* ==========================================
+   Delete Button
+========================================== */
+
+.btn-danger {
+
+    background: #dc3545;
+
+    color: white;
+
+    border: none;
+
+    padding: 8px 14px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    transition: 0.3s;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+}
+
+.btn-danger:hover {
+
+    background: #bb2d3b;
+
+}
+/* ==========================================
+   Order Action Buttons
+========================================== */
+
+.order-actions {
+
+    display: flex;
+
+    gap: 8px;
+
+    align-items: center;
+
+}
+
+.order-actions button {
+
+    min-width: 80px;
+
+}
