@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "name": "Chicken Pickle",
+    "category": "Pickle",
+    "price": 350,
+    "stock": 50,
+    "status": "Active",
+    "id": "ORD-000001",
+    "createdAt": "2026-08-09T03:36:38.128Z"
+  },
+  {
+    "customer": "Walk-in Customer",
+    "total": 700,
+    "status": "Pending",
+    "id": "ORD-000002",
+    "createdAt": "2026-08-09T03:36:51.070Z"
+  }
+]

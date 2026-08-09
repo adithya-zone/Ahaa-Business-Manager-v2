@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "name": "Chicken Pickle",
+    "category": "Pickle",
+    "price": 350,
+    "stock": 500,
+    "status": "Active",
+    "id": "PRD-000001",
+    "createdAt": "2026-08-09T03:13:14.831Z"
+  }
+]
