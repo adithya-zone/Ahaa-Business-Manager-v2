@@ -10,16 +10,6 @@
     "createdAt": "2026-08-09T10:00:00.000Z"
   },
   {
-    "id": "ORD-000002",
-    "customer": "Ramesh Kumar",
-    "productId": "PRD-000002",
-    "productName": "Mango Pickle",
-    "quantity": 1,
-    "total": 250,
-    "status": "Completed",
-    "createdAt": "2026-08-09T11:30:00.000Z"
-  },
-  {
     "id": "ORD-000003",
     "customer": "Walk-in Customer",
     "productId": "PRD-000001",

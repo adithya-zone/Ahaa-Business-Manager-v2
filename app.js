@@ -5,6 +5,7 @@ const path = require("path");
 const productRoutes = require("./src/routes/productRoutes");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const orderRoutes = require("./src/routes/orderRoutes");
+const customerRoutes = require("./src/routes/customerRoutes");
 
 const app = express();
 
@@ -18,20 +19,23 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+// ==========================================
+// API Routes
+// ==========================================
+
 app.use("/api/dashboard", dashboardRoutes);
 
+app.use("/api/products", productRoutes);
+
 app.use("/api/orders", orderRoutes);
+
+app.use("/api/customers", customerRoutes);
+
 // ==========================================
 // Static Files
 // ==========================================
 
 app.use(express.static(path.join(__dirname, "public")));
-
-// ==========================================
-// API Routes
-// ==========================================
-
-app.use("/api/products", productRoutes);
 
 // ==========================================
 // Health Check

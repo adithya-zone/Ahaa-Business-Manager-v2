@@ -86,6 +86,16 @@ async function loadPage(page) {
 
                 break;
 
+            case "customers":
+
+                if (typeof loadCustomers === "function") {
+
+                    loadCustomers();
+
+                }
+
+                break;
+
         }
 
     } catch (err) {
@@ -105,11 +115,17 @@ function updateTitle(page) {
     const titles = {
 
         dashboard: "Dashboard",
+
         products: "Products",
+
         orders: "Orders",
+
         customers: "Customers",
+
         inventory: "Inventory",
+
         reports: "Reports",
+
         settings: "Settings"
 
     };
@@ -179,6 +195,10 @@ async function init() {
         "modalContainer",
         "components/productModal.html"
     );
+
+    // Load Customer Modal
+    document.getElementById("modalContainer").innerHTML +=
+        await (await fetch("components/customerModal.html")).text();
 
     await loadComponent(
         "orderModalContainer",

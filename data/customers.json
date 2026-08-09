@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "CUS-000001",
+    "name": "Walk-in Customer",
+    "phone": "9999999999",
+    "email": "walkin@ahaa.com",
+    "city": "Nellore",
+    "address": "Store",
+    "status": "Active",
+    "createdAt": "2026-08-10T00:00:00.000Z"
+  }
+]
