@@ -76,15 +76,15 @@ async function loadPage(page) {
 
         break;
 
-    case "orders":
+case "orders":
 
-        if (typeof loadOrders === "function") {
+    if (typeof initializeOrders === "function") {
 
-            loadOrders();
+        initializeOrders();
 
-        }
+    }
 
-        break;
+    break;
 
     case "customers":
 
@@ -204,6 +204,10 @@ async function init() {
         "orderModalContainer",
         "components/orderModal.html"
     );
+    await loadComponent(
+    "invoiceModalContainer",
+    "components/invoiceModal.html"
+);
 
     bindMenu();
 

@@ -4,9 +4,15 @@
 
         <div class="modal-header">
 
-            <h2>Create Order</h2>
+            <h2 id="orderModalTitle">
 
-            <button type="button" id="closeOrderModal">
+                Create Order
+
+            </h2>
+
+            <button
+                type="button"
+                id="closeOrderModal">
 
                 <i class="fa-solid fa-xmark"></i>
 
@@ -14,80 +20,106 @@
 
         </div>
 
-        <div class="modal-body">
+        <form id="orderForm">
 
-            <div class="form-group">
+            <div class="modal-body">
 
-                <label>Customer Name</label>
+                <div class="form-group">
 
-                <input
-                    type="text"
-                    id="customerName"
-                    placeholder="Walk-in Customer">
+                    <label>Customer Name</label>
+
+                    <input
+                        type="text"
+                        id="orderCustomer"
+                        placeholder="Walk-in Customer"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Product</label>
+
+                    <select
+                        id="orderProduct"
+                        required>
+
+                        <option value="">
+
+                            Select Product
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Quantity</label>
+
+                    <input
+                        type="number"
+                        id="orderQuantity"
+                        min="1"
+                        value="1"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Status</label>
+
+                    <select id="orderStatus">
+
+                        <option value="Pending">
+
+                            Pending
+
+                        </option>
+
+                        <option value="Completed">
+
+                            Completed
+
+                        </option>
+
+                        <option value="Cancelled">
+
+                            Cancelled
+
+                        </option>
+
+                    </select>
+
+                </div>
 
             </div>
 
-            <div class="form-group">
+            <div class="modal-footer">
 
-                <label>Select Product</label>
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    id="cancelOrderBtn">
 
-                <select
-                    id="orderProduct"
-                    onchange="onProductChanged()">
+                    Cancel
 
-                    <option value="">Loading...</option>
+                </button>
 
-                </select>
+                <button
+                    type="button"
+                    class="btn-primary"
+                    id="saveOrderBtn">
 
-            </div>
+                    Save Order
 
-            <div class="form-group">
-
-                <label>Quantity</label>
-
-                <input
-                    type="number"
-                    id="orderQty"
-                    min="1"
-                    value="1"
-                    oninput="onQuantityChanged()">
+                </button>
 
             </div>
 
-            <div class="form-group">
-
-                <label>Total</label>
-
-                <input
-                    type="text"
-                    id="orderTotal"
-                    readonly>
-
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                type="button"
-                class="btn-secondary"
-                id="cancelOrderBtn">
-
-                Cancel
-
-            </button>
-
-            <button
-                type="button"
-                class="btn-primary"
-                id="saveOrderBtn">
-
-                Save Order
-
-            </button>
-
-        </div>
+        </form>
 
     </div>
 

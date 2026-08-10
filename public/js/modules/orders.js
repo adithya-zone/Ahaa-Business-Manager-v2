@@ -2,9 +2,11 @@
 // Orders Module
 // ==========================================
 
-let orderProducts = [];
-let selectedProduct = null;
-let editingOrder = null;
+let orders = [];
+
+let products = [];
+
+let editingOrderId = null;
 
 // ==========================================
 // Load Orders
@@ -18,18 +20,89 @@ async function loadOrders() {
 
         if (!result.success) {
 
-            Toast.show(result.message, "error");
+            Toast.show(
+
+                result.message,
+
+                "error"
+
+            );
+
             return;
 
         }
 
-        renderOrders(result.data || []);
+        orders = result.data || [];
 
-    } catch (err) {
+        renderOrders(orders);
+
+    }
+
+    catch (err) {
 
         console.error(err);
 
-        Toast.show("Unable to load orders.", "error");
+        Toast.show(
+
+            "Unable to load orders.",
+
+            "error"
+
+        );
+
+    }
+
+}
+
+// ==========================================
+// Load Products
+// ==========================================
+
+async function loadOrderProducts() {
+
+    try {
+
+        const result = await ApiService.get(
+
+            "/api/products"
+
+        );
+
+        if (!result.success) return;
+
+        products = result.data || [];
+
+        const select = document.getElementById(
+
+            "orderProduct"
+
+        );
+
+        if (!select) return;
+
+        select.innerHTML =
+
+            '<option value="">Select Product</option>';
+
+        products.forEach(product => {
+
+            select.innerHTML += `
+
+                <option value="${product.id}">
+
+                    ${product.name}
+
+                </option>
+
+            `;
+
+        });
+
+    }
+
+    catch (err) {
+
+        console.error(err);
 
     }
 
@@ -39,29 +112,41 @@ async function loadOrders() {
 // Render Orders
 // ==========================================
 
-function renderOrders(orders) {
+function renderOrders(data) {
 
-    const table = document.getElementById("orderTable");
+    const table = document.getElementById(
+
+        "orderTable"
+
+    );
 
     if (!table) return;
 
     table.innerHTML = "";
 
-    if (orders.length === 0) {
+    if (data.length === 0) {
 
         table.innerHTML = `
-        <tr>
-            <td colspan="8" style="text-align:center;padding:25px;">
-                No orders available
-            </td>
-        </tr>
+
+            <tr>
+
+                <td colspan="8"
+
+                    style="text-align:center;padding:30px;">
+
+                    No orders available
+
+                </td>
+
+            </tr>
+
         `;
 
         return;
 
     }
 
-    orders.forEach(order => {
+    data.forEach(order => {
 
         table.innerHTML += `
 
@@ -71,7 +156,7 @@ function renderOrders(orders) {
 
             <td>${order.customer}</td>
 
-            <td>${order.productName || "-"}</td>
+            <td>${order.productName}</td>
 
             <td>${order.quantity}</td>
 
@@ -89,7 +174,9 @@ function renderOrders(orders) {
 
             <td>
 
-                ${new Date(order.createdAt).toLocaleDateString()}
+                ${new Date(order.createdAt)
+
+                    .toLocaleDateString()}
 
             </td>
 
@@ -98,7 +185,21 @@ function renderOrders(orders) {
                 <div class="order-actions">
 
                     <button
+
+                        class="btn-primary invoice-btn"
+
+                        data-id="${order.id}">
+
+                        <i class="fa-solid fa-file-invoice"></i>
+
+                        Invoice
+
+                    </button>
+
+                    <button
+
                         class="btn-primary edit-order-btn"
+
                         data-id="${order.id}">
 
                         Edit
@@ -106,7 +207,9 @@ function renderOrders(orders) {
                     </button>
 
                     <button
+
                         class="btn-danger delete-order-btn"
+
                         data-id="${order.id}">
 
                         Delete
@@ -124,229 +227,79 @@ function renderOrders(orders) {
     });
 
 }
-
 // ==========================================
 // Open Order Modal
 // ==========================================
 
-async function openOrderModal() {
+async function openOrderModal(edit = false, order = null) {
 
-    editingOrder = null;
+    editingOrderId = null;
 
-    const modal = document.getElementById("orderModal");
+    await loadOrderProducts();
 
-    modal.style.display = "flex";
+    document.getElementById("orderForm").reset();
 
-    document.getElementById("customerName").value =
-        "Walk-in Customer";
+    if (edit && order) {
 
-    document.getElementById("orderQty").value = 1;
+        editingOrderId = order.id;
 
-    document.getElementById("orderTotal").value = "";
+        document.getElementById("orderCustomer").value =
+            order.customer;
 
-    const btn = document.getElementById("saveOrderBtn");
+        document.getElementById("orderProduct").value =
+            order.productId;
 
-    btn.textContent = "Save Order";
+        document.getElementById("orderQuantity").value =
+            order.quantity;
 
-    await loadProductsForOrder();
+        document.getElementById("orderStatus").value =
+            order.status;
+
+    }
+
+    document.getElementById("orderModal").style.display =
+        "flex";
 
 }
 
 // ==========================================
-// Close Modal
+// Close Order Modal
 // ==========================================
 
 function closeOrderModal() {
+
+    editingOrderId = null;
 
     document.getElementById("orderModal").style.display =
         "none";
 
 }
-// ==========================================
-// Load Products for Order
-// ==========================================
-
-async function loadProductsForOrder() {
-
-    try {
-
-        const result = await ApiService.get("/api/products");
-
-        if (!result.success) {
-
-            Toast.show("Unable to load products.", "error");
-
-            return;
-
-        }
-
-        orderProducts = result.data || [];
-
-        const select = document.getElementById("orderProduct");
-
-        select.innerHTML = "";
-
-        if (orderProducts.length === 0) {
-
-            select.innerHTML = `
-                <option value="">
-                    No Products Available
-                </option>
-            `;
-
-            return;
-
-        }
-
-        orderProducts.forEach(product => {
-
-            select.innerHTML += `
-                <option value="${product.id}">
-                    ${product.name} (₹${product.price})
-                </option>
-            `;
-
-        });
-
-        if (editingOrder) {
-
-            select.value = editingOrder.productId;
-
-            selectedProduct = orderProducts.find(
-                p => p.id === editingOrder.productId
-            );
-
-        } else {
-
-            selectedProduct = orderProducts[0];
-
-        }
-
-        calculateOrderTotal();
-
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-        Toast.show("Unable to load products.", "error");
-
-    }
-
-}
 
 // ==========================================
-// Product Changed
-// ==========================================
-
-function onProductChanged() {
-
-    const id = document.getElementById("orderProduct").value;
-
-    selectedProduct = orderProducts.find(
-
-        p => p.id === id
-
-    );
-
-    calculateOrderTotal();
-
-}
-
-// ==========================================
-// Quantity Changed
-// ==========================================
-
-function onQuantityChanged() {
-
-    calculateOrderTotal();
-
-}
-
-// ==========================================
-// Calculate Total
-// ==========================================
-
-function calculateOrderTotal() {
-
-    if (!selectedProduct) return;
-
-    let qty = Number(
-        document.getElementById("orderQty").value
-    );
-
-    if (qty <= 0) {
-
-        qty = 1;
-
-        document.getElementById("orderQty").value = 1;
-
-    }
-
-    if (qty > selectedProduct.stock) {
-
-        Toast.show(
-            `Only ${selectedProduct.stock} item(s) available.`,
-            "warning"
-        );
-
-        qty = selectedProduct.stock;
-
-        document.getElementById("orderQty").value = qty;
-
-    }
-
-    const total = qty * Number(selectedProduct.price);
-
-    document.getElementById("orderTotal").value = total;
-
-}
-
-// ==========================================
-// Reset Form
-// ==========================================
-
-function resetOrderForm() {
-
-    document.getElementById("customerName").value =
-        "Walk-in Customer";
-
-    document.getElementById("orderQty").value = 1;
-
-    document.getElementById("orderTotal").value = "";
-
-    editingOrder = null;
-
-}
-// ==========================================
-// Save / Update Order
+// Save Order
 // ==========================================
 
 async function saveOrder() {
 
     try {
 
-        if (!selectedProduct) {
-
-            Toast.show("Please select a product.", "warning");
-            return;
-
-        }
-
-        const customer = document
-            .getElementById("customerName")
-            .value
-            .trim() || "Walk-in Customer";
+        const productId =
+            document.getElementById("orderProduct").value;
 
         const quantity = Number(
-            document.getElementById("orderQty").value
+            document.getElementById("orderQuantity").value
         );
 
-        if (quantity <= 0) {
+        const customer =
+            document.getElementById("orderCustomer").value;
+
+        const status =
+            document.getElementById("orderStatus").value;
+
+        if (!productId || quantity <= 0) {
 
             Toast.show(
-                "Quantity must be greater than zero.",
+                "Please complete the form.",
                 "warning"
             );
 
@@ -354,71 +307,87 @@ async function saveOrder() {
 
         }
 
-        const order = {
+        const product = products.find(
+
+            p => p.id === productId
+
+        );
+
+        if (!product) {
+
+            Toast.show(
+                "Product not found.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        const payload = {
 
             customer,
 
-            productId: selectedProduct.id,
+            productId,
 
             quantity,
 
-            total: Number(
-                document.getElementById("orderTotal").value
-            ),
+            total: quantity * Number(product.price),
 
-            status: "Pending"
+            status
 
         };
 
         let result;
 
-        if (editingOrder) {
+        if (editingOrderId) {
 
             result = await ApiService.put(
-                `/api/orders/${editingOrder.id}`,
-                order
+
+                `/api/orders/${editingOrderId}`,
+
+                payload
+
             );
 
         } else {
 
             result = await ApiService.post(
+
                 "/api/orders",
-                order
+
+                payload
+
             );
 
         }
 
         if (!result.success) {
 
-            Toast.show(result.message, "error");
+            Toast.show(
+                result.message,
+                "error"
+            );
+
             return;
 
         }
 
         Toast.show(
-            editingOrder
-                ? "Order updated successfully."
-                : "Order created successfully.",
+
+            editingOrderId
+
+                ? "Order Updated"
+
+                : "Order Created",
+
             "success"
+
         );
 
         closeOrderModal();
 
-        resetOrderForm();
-
         await loadOrders();
-
-        if (typeof loadProducts === "function") {
-
-            await loadProducts();
-
-        }
-
-        if (typeof loadDashboard === "function") {
-
-            await loadDashboard();
-
-        }
 
     }
 
@@ -426,59 +395,47 @@ async function saveOrder() {
 
         console.error(err);
 
-        Toast.show("Unable to save order.", "error");
+        Toast.show(
+            "Unable to save order.",
+            "error"
+        );
 
     }
 
 }
-
 // ==========================================
 // Edit Order
 // ==========================================
 
-async function editOrder(id) {
+function editOrder(id) {
 
-    try {
+    const order = orders.find(
 
-        const result = await ApiService.get("/api/orders");
+        o => o.id === id
 
-        const orders = result.data || [];
+    );
 
-        editingOrder = orders.find(o => o.id === id);
+    if (!order) {
 
-        if (!editingOrder) {
+        Toast.show(
 
-            Toast.show("Order not found.", "error");
+            "Order not found.",
 
-            return;
+            "error"
 
-        }
+        );
 
-        document.getElementById("customerName").value =
-            editingOrder.customer;
-
-        document.getElementById("orderQty").value =
-            editingOrder.quantity;
-
-        await openOrderModal();
-
-        document.getElementById("orderProduct").value =
-            editingOrder.productId;
-
-        onProductChanged();
-
-        document.getElementById("saveOrderBtn").textContent =
-            "Update Order";
+        return;
 
     }
 
-    catch (err) {
+    openOrderModal(
 
-        console.error(err);
+        true,
 
-        Toast.show("Unable to load order.", "error");
+        order
 
-    }
+    );
 
 }
 
@@ -488,7 +445,15 @@ async function editOrder(id) {
 
 async function deleteOrder(id) {
 
-    if (!confirm("Delete this order?")) {
+    if (
+
+        !confirm(
+
+            "Delete this order?"
+
+        )
+
+    ) {
 
         return;
 
@@ -497,35 +462,34 @@ async function deleteOrder(id) {
     try {
 
         const result = await ApiService.delete(
+
             `/api/orders/${id}`
+
         );
 
         if (!result.success) {
 
-            Toast.show(result.message, "error");
+            Toast.show(
+
+                result.message,
+
+                "error"
+
+            );
 
             return;
 
         }
 
         Toast.show(
-            "Order deleted successfully.",
+
+            "Order Deleted",
+
             "success"
+
         );
 
-        await loadOrders();
-
-        if (typeof loadProducts === "function") {
-
-            await loadProducts();
-
-        }
-
-        if (typeof loadDashboard === "function") {
-
-            await loadDashboard();
-
-        }
+        loadOrders();
 
     }
 
@@ -534,119 +498,212 @@ async function deleteOrder(id) {
         console.error(err);
 
         Toast.show(
+
             "Unable to delete order.",
+
             "error"
+
         );
 
     }
 
 }
+
 // ==========================================
 // Event Binding
 // ==========================================
 
-document.addEventListener("change", function (e) {
+document.addEventListener(
 
-    if (e.target.id === "orderProduct") {
+    "click",
 
-        onProductChanged();
+    function (e) {
+
+        // -----------------------------
+        // Create Order
+        // -----------------------------
+
+        if (
+
+            e.target.closest(
+
+                "#addOrderBtn"
+
+            )
+
+        ) {
+
+            openOrderModal();
+
+            return;
+
+        }
+
+        // -----------------------------
+        // Save Order
+        // -----------------------------
+
+        if (
+
+            e.target.closest(
+
+                "#saveOrderBtn"
+
+            )
+
+        ) {
+
+            saveOrder();
+
+            return;
+
+        }
+
+        // -----------------------------
+        // Close Modal
+        // -----------------------------
+
+        if (
+
+            e.target.closest(
+
+                "#closeOrderModal"
+
+            )
+
+            ||
+
+            e.target.closest(
+
+                "#cancelOrderBtn"
+
+            )
+
+        ) {
+
+            closeOrderModal();
+
+            return;
+
+        }
+
+        // -----------------------------
+        // Edit Order
+        // -----------------------------
+
+        const editBtn = e.target.closest(
+
+            ".edit-order-btn"
+
+        );
+
+        if (editBtn) {
+
+            editOrder(
+
+                editBtn.dataset.id
+
+            );
+
+            return;
+
+        }
+
+        // -----------------------------
+        // Delete Order
+        // -----------------------------
+
+        const deleteBtn = e.target.closest(
+
+            ".delete-order-btn"
+
+        );
+
+        if (deleteBtn) {
+
+            deleteOrder(
+
+                deleteBtn.dataset.id
+
+            );
+
+            return;
+
+        }
+
+        // -----------------------------
+        // Invoice
+        // -----------------------------
+
+        const invoiceBtn = e.target.closest(
+
+            ".invoice-btn"
+
+        );
+
+        if (invoiceBtn) {
+
+            openInvoice(
+
+                invoiceBtn.dataset.id
+
+            );
+
+            return;
+
+        }
 
     }
 
-});
+);
+// ==========================================
+// Initialize Orders Module
+// ==========================================
 
-document.addEventListener("input", function (e) {
+function initializeOrders() {
 
-    if (e.target.id === "orderQty") {
+    loadOrders();
 
-        onQuantityChanged();
+}
 
-    }
+// ==========================================
+// Close Modal on Outside Click
+// ==========================================
 
-});
+window.addEventListener("click", function (e) {
 
-document.addEventListener("click", function (e) {
+    const orderModal = document.getElementById("orderModal");
 
-    // Create Order
-    if (e.target.closest("#addOrderBtn")) {
-
-        openOrderModal();
-
-    }
-
-    // Save / Update Order
-    if (e.target.closest("#saveOrderBtn")) {
-
-        saveOrder();
-
-    }
-
-    // Close Modal
-    if (
-        e.target.closest("#cancelOrderBtn") ||
-        e.target.closest("#closeOrderModal")
-    ) {
+    if (orderModal && e.target === orderModal) {
 
         closeOrderModal();
 
     }
 
-    // Edit Order
-    if (e.target.closest(".edit-order-btn")) {
+});
 
-        const id = e.target
-            .closest(".edit-order-btn")
-            .dataset.id;
+// ==========================================
+// ESC Key Support
+// ==========================================
 
-        editOrder(id);
+document.addEventListener("keydown", function (e) {
 
-    }
+    if (e.key === "Escape") {
 
-    // Delete Order
-    if (e.target.closest(".delete-order-btn")) {
-
-        const id = e.target
-            .closest(".delete-order-btn")
-            .dataset.id;
-
-        deleteOrder(id);
+        closeOrderModal();
 
     }
 
 });
 
 // ==========================================
-// Refresh Helpers
+// Auto Initialize When Orders Page Loads
 // ==========================================
 
-async function refreshModules() {
+if (typeof window !== "undefined") {
 
-    await loadOrders();
+    window.loadOrders = loadOrders;
 
-    if (typeof loadProducts === "function") {
-
-        await loadProducts();
-
-    }
-
-    if (typeof loadDashboard === "function") {
-
-        await loadDashboard();
-
-    }
+    window.initializeOrders = initializeOrders;
 
 }
-
-// ==========================================
-// Initialize
-// ==========================================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    if (document.getElementById("orderTable")) {
-
-        loadOrders();
-
-    }
-
-});
