@@ -1,6 +1,6 @@
 const { read, write } = require("../utils/dataStore");
 const { generateId } = require("../utils/idGenerator");
-const { productFile } = require("../models/productModel");
+const { productsFile } = require("../models/productModel");
 
 // ======================================
 // Get All Products
@@ -8,7 +8,7 @@ const { productFile } = require("../models/productModel");
 
 function getProducts() {
 
-    return read(productFile);
+    return read(productsFile);
 
 }
 
@@ -18,7 +18,7 @@ function getProducts() {
 
 function getProduct(id) {
 
-    const products = read(productFile);
+    const products = read(productsFile);
 
     return products.find(p => p.id === id);
 
@@ -30,7 +30,7 @@ function getProduct(id) {
 
 function createProduct(product) {
 
-    const products = read(productFile);
+    const products = read(productsFile);
 
     product.id = generateId("PRD", products.length);
 
@@ -38,7 +38,7 @@ function createProduct(product) {
 
     products.push(product);
 
-    write(productFile, products);
+    write(productsFile, products);
 
     return product;
 
@@ -50,7 +50,7 @@ function createProduct(product) {
 
 function updateProduct(id, data) {
 
-    const products = read(productFile);
+    const products = read(productsFile);
 
     const index = products.findIndex(p => p.id === id);
 
@@ -68,7 +68,7 @@ function updateProduct(id, data) {
 
     };
 
-    write(productFile, products);
+    write(productsFile, products);
 
     return products[index];
 
@@ -80,11 +80,15 @@ function updateProduct(id, data) {
 
 function deleteProduct(id) {
 
-    const products = read(productFile);
+    const products = read(productsFile);
 
-    const updated = products.filter(p => p.id !== id);
+    const updated = products.filter(
 
-    write(productFile, updated);
+        p => p.id !== id
+
+    );
+
+    write(productsFile, updated);
 
 }
 
