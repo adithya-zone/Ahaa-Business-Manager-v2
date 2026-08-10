@@ -50,53 +50,53 @@ async function loadPage(page) {
 
         switch (page) {
 
-            case "dashboard":
+    case "dashboard":
 
-                if (typeof loadDashboard === "function") {
+        if (typeof loadDashboard === "function") {
 
-                    loadDashboard();
-
-                }
-
-                break;
-
-            case "products":
-
-                if (typeof loadProducts === "function") {
-
-                    loadProducts();
-
-                }
-
-                if (typeof bindProductEvents === "function") {
-
-                    bindProductEvents();
-
-                }
-
-                break;
-
-            case "orders":
-
-                if (typeof loadOrders === "function") {
-
-                    loadOrders();
-
-                }
-
-                break;
-
-            case "customers":
-
-                if (typeof loadCustomers === "function") {
-
-                    loadCustomers();
-
-                }
-
-                break;
+            loadDashboard();
 
         }
+
+        break;
+
+    case "products":
+
+        if (typeof loadProducts === "function") {
+
+            loadProducts();
+
+        }
+
+        if (typeof bindProductEvents === "function") {
+
+            bindProductEvents();
+
+        }
+
+        break;
+
+    case "orders":
+
+        if (typeof loadOrders === "function") {
+
+            loadOrders();
+
+        }
+
+        break;
+
+    case "customers":
+
+        if (typeof loadCustomers === "function") {
+
+            loadCustomers();
+
+        }
+
+        break;
+
+}
 
     } catch (err) {
 

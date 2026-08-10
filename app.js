@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
-const productRoutes = require("./src/routes/productRoutes");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
+const productRoutes = require("./src/routes/productRoutes");
 const orderRoutes = require("./src/routes/orderRoutes");
 const customerRoutes = require("./src/routes/customerRoutes");
 
@@ -54,7 +54,7 @@ app.get("/api/health", (req, res) => {
 });
 
 // ==========================================
-// Home Route
+// Home
 // ==========================================
 
 app.get("/", (req, res) => {
@@ -68,7 +68,7 @@ app.get("/", (req, res) => {
 });
 
 // ==========================================
-// 404 Handler
+// 404
 // ==========================================
 
 app.use((req, res) => {
