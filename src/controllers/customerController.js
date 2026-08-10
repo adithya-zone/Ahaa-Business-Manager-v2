@@ -1,13 +1,61 @@
 const service = require("../services/customerService");
-const { success } = require("../utils/response");
+const { success, error } = require("../utils/response");
 
 // ======================================
 // Get Customers
 // ======================================
 
-function getCustomers(req, res) {
+async function getCustomers(req, res) {
 
-    success(res, service.getCustomers());
+    try {
+
+        const customers = await service.getCustomers();
+
+        success(res, customers);
+
+    }
+
+    catch (err) {
+
+        error(res, err.message, 500);
+
+    }
+
+}
+
+// ======================================
+// Get Customer By ID
+// ======================================
+
+async function getCustomer(req, res) {
+
+    try {
+
+        const customer = await service.getCustomer(req.params.id);
+
+        if (!customer) {
+
+            return error(
+
+                res,
+
+                "Customer not found",
+
+                404
+
+            );
+
+        }
+
+        success(res, customer);
+
+    }
+
+    catch (err) {
+
+        error(res, err.message, 500);
+
+    }
 
 }
 
@@ -15,23 +63,27 @@ function getCustomers(req, res) {
 // Create Customer
 // ======================================
 
-function createCustomer(req, res) {
+async function createCustomer(req, res) {
 
     try {
 
-        const customer = service.createCustomer(req.body);
+        const customer = await service.createCustomer(req.body);
 
-        success(res, customer, "Customer Created");
+        success(
 
-    } catch (err) {
+            res,
 
-        res.status(400).json({
+            customer,
 
-            success: false,
+            "Customer Created"
 
-            message: err.message
+        );
 
-        });
+    }
+
+    catch (err) {
+
+        error(res, err.message, 400);
 
     }
 
@@ -41,11 +93,11 @@ function createCustomer(req, res) {
 // Update Customer
 // ======================================
 
-function updateCustomer(req, res) {
+async function updateCustomer(req, res) {
 
     try {
 
-        const customer = service.updateCustomer(
+        const customer = await service.updateCustomer(
 
             req.params.id,
 
@@ -53,17 +105,21 @@ function updateCustomer(req, res) {
 
         );
 
-        success(res, customer, "Customer Updated");
+        success(
 
-    } catch (err) {
+            res,
 
-        res.status(400).json({
+            customer,
 
-            success: false,
+            "Customer Updated"
 
-            message: err.message
+        );
 
-        });
+    }
+
+    catch (err) {
+
+        error(res, err.message, 400);
 
     }
 
@@ -73,23 +129,27 @@ function updateCustomer(req, res) {
 // Delete Customer
 // ======================================
 
-function deleteCustomer(req, res) {
+async function deleteCustomer(req, res) {
 
     try {
 
-        service.deleteCustomer(req.params.id);
+        await service.deleteCustomer(req.params.id);
 
-        success(res, null, "Customer Deleted");
+        success(
 
-    } catch (err) {
+            res,
 
-        res.status(400).json({
+            {},
 
-            success: false,
+            "Customer Deleted"
 
-            message: err.message
+        );
 
-        });
+    }
+
+    catch (err) {
+
+        error(res, err.message, 400);
 
     }
 
@@ -98,6 +158,8 @@ function deleteCustomer(req, res) {
 module.exports = {
 
     getCustomers,
+
+    getCustomer,
 
     createCustomer,
 

@@ -1,15 +1,23 @@
-const { read, write } = require("../utils/dataStore");
+const customerRepository = require("../repositories/customerRepository");
 const { generateId } = require("../utils/idGenerator");
-
-const { customersFile } = require("../models/customerModel");
 
 // ======================================
 // Get Customers
 // ======================================
 
-function getCustomers() {
+async function getCustomers() {
 
-    return read(customersFile);
+    return await customerRepository.getAll();
+
+}
+
+// ======================================
+// Get Customer By ID
+// ======================================
+
+async function getCustomer(id) {
+
+    return await customerRepository.getById(id);
 
 }
 
@@ -17,13 +25,17 @@ function getCustomers() {
 // Create Customer
 // ======================================
 
-function createCustomer(customer) {
+async function createCustomer(customer) {
 
-    const customers = read(customersFile);
+    const lastCustomer = await customerRepository.getLastCustomer();
+
+    const lastNumber = lastCustomer
+        ? Number(lastCustomer.id.split("-")[1])
+        : 0;
 
     const newCustomer = {
 
-        id: generateId("CUS", customers.length),
+        id: generateId("CUS", lastNumber),
 
         name: customer.name,
 
@@ -41,9 +53,7 @@ function createCustomer(customer) {
 
     };
 
-    customers.push(newCustomer);
-
-    write(customersFile, customers);
+    await customerRepository.create(newCustomer);
 
     return newCustomer;
 
@@ -53,29 +63,27 @@ function createCustomer(customer) {
 // Update Customer
 // ======================================
 
-function updateCustomer(id, customer) {
+async function updateCustomer(id, customer) {
 
-    const customers = read(customersFile);
+    const existing = await customerRepository.getById(id);
 
-    const index = customers.findIndex(c => c.id === id);
-
-    if (index === -1) {
+    if (!existing) {
 
         throw new Error("Customer not found.");
 
     }
 
-    customers[index] = {
+    const updated = {
 
-        ...customers[index],
+        ...existing,
 
         ...customer
 
     };
 
-    write(customersFile, customers);
+    await customerRepository.update(id, updated);
 
-    return customers[index];
+    return updated;
 
 }
 
@@ -83,21 +91,9 @@ function updateCustomer(id, customer) {
 // Delete Customer
 // ======================================
 
-function deleteCustomer(id) {
+async function deleteCustomer(id) {
 
-    const customers = read(customersFile);
-
-    const index = customers.findIndex(c => c.id === id);
-
-    if (index === -1) {
-
-        throw new Error("Customer not found.");
-
-    }
-
-    customers.splice(index, 1);
-
-    write(customersFile, customers);
+    await customerRepository.delete(id);
 
     return true;
 
@@ -106,6 +102,8 @@ function deleteCustomer(id) {
 module.exports = {
 
     getCustomers,
+
+    getCustomer,
 
     createCustomer,
 

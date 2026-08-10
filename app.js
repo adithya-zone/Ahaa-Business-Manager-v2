@@ -21,6 +21,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ==========================================
+// Static Files
+// ==========================================
+
+app.use(express.static(path.join(__dirname, "public")));
+
+// ==========================================
 // API Routes
 // ==========================================
 
@@ -35,12 +41,6 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/invoice", invoiceRoutes);
 
 // ==========================================
-// Static Files
-// ==========================================
-
-app.use(express.static(path.join(__dirname, "public")));
-
-// ==========================================
 // Health Check
 // ==========================================
 
@@ -50,7 +50,9 @@ app.get("/api/health", (req, res) => {
 
         success: true,
 
-        message: "Ahaa Business Manager ERP v2 is running."
+        message: "Ahaa Business Manager ERP v2 is running.",
+
+        database: "SQLite"
 
     });
 
@@ -64,14 +66,22 @@ app.get("/", (req, res) => {
 
     res.sendFile(
 
-        path.join(__dirname, "public", "index.html")
+        path.join(
+
+            __dirname,
+
+            "public",
+
+            "index.html"
+
+        )
 
     );
 
 });
 
 // ==========================================
-// 404
+// 404 Handler
 // ==========================================
 
 app.use((req, res) => {

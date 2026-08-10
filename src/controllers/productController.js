@@ -1,20 +1,25 @@
 const service = require("../services/productService");
-
 const { success, error } = require("../utils/response");
 
 // ======================================
 // Get Products
 // ======================================
 
-function getProducts(req, res) {
+async function getProducts(req, res) {
 
-    success(
+    try {
 
-        res,
+        const products = await service.getProducts();
 
-        service.getProducts()
+        success(res, products);
 
-    );
+    }
+
+    catch (err) {
+
+        error(res, err.message, 500);
+
+    }
 
 }
 
@@ -22,35 +27,31 @@ function getProducts(req, res) {
 // Get Product
 // ======================================
 
-function getProduct(req, res) {
+async function getProduct(req, res) {
 
-    const product = service.getProduct(
+    try {
 
-        req.params.id
+        const product = await service.getProduct(req.params.id);
 
-    );
+        if (!product) {
 
-    if (!product) {
+            return error(
+                res,
+                "Product not found",
+                404
+            );
 
-        return error(
+        }
 
-            res,
-
-            "Product not found",
-
-            404
-
-        );
+        success(res, product);
 
     }
 
-    success(
+    catch (err) {
 
-        res,
+        error(res, err.message, 500);
 
-        product
-
-    );
+    }
 
 }
 
@@ -58,23 +59,25 @@ function getProduct(req, res) {
 // Create Product
 // ======================================
 
-function createProduct(req, res) {
+async function createProduct(req, res) {
 
-    const product = service.createProduct(
+    try {
 
-        req.body
+        const product = await service.createProduct(req.body);
 
-    );
+        success(
+            res,
+            product,
+            "Product Created"
+        );
 
-    success(
+    }
 
-        res,
+    catch (err) {
 
-        product,
+        error(res, err.message, 500);
 
-        "Product Created"
-
-    );
+    }
 
 }
 
@@ -82,39 +85,41 @@ function createProduct(req, res) {
 // Update Product
 // ======================================
 
-function updateProduct(req, res) {
+async function updateProduct(req, res) {
 
-    const product = service.updateProduct(
+    try {
 
-        req.params.id,
+        const product = await service.updateProduct(
 
-        req.body
+            req.params.id,
 
-    );
+            req.body
 
-    if (!product) {
+        );
 
-        return error(
+        if (!product) {
 
+            return error(
+                res,
+                "Product not found",
+                404
+            );
+
+        }
+
+        success(
             res,
-
-            "Product not found",
-
-            404
-
+            product,
+            "Product Updated"
         );
 
     }
 
-    success(
+    catch (err) {
 
-        res,
+        error(res, err.message, 500);
 
-        product,
-
-        "Product Updated"
-
-    );
+    }
 
 }
 
@@ -122,23 +127,25 @@ function updateProduct(req, res) {
 // Delete Product
 // ======================================
 
-function deleteProduct(req, res) {
+async function deleteProduct(req, res) {
 
-    service.deleteProduct(
+    try {
 
-        req.params.id
+        await service.deleteProduct(req.params.id);
 
-    );
+        success(
+            res,
+            {},
+            "Product Deleted"
+        );
 
-    success(
+    }
 
-        res,
+    catch (err) {
 
-        {},
+        error(res, err.message, 500);
 
-        "Product Deleted"
-
-    );
+    }
 
 }
 

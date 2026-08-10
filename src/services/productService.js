@@ -1,14 +1,13 @@
-const { read, write } = require("../utils/dataStore");
+const productRepository = require("../repositories/productRepository");
 const { generateId } = require("../utils/idGenerator");
-const { productsFile } = require("../models/productModel");
 
 // ======================================
 // Get All Products
 // ======================================
 
-function getProducts() {
+async function getProducts() {
 
-    return read(productsFile);
+    return await productRepository.getAll();
 
 }
 
@@ -16,11 +15,9 @@ function getProducts() {
 // Get Product By ID
 // ======================================
 
-function getProduct(id) {
+async function getProduct(id) {
 
-    const products = read(productsFile);
-
-    return products.find(p => p.id === id);
+    return await productRepository.getById(id);
 
 }
 
@@ -28,17 +25,21 @@ function getProduct(id) {
 // Create Product
 // ======================================
 
-function createProduct(product) {
+async function createProduct(product) {
 
-    const products = read(productsFile);
+    const lastProduct = await productRepository.getLastProduct();
 
-    product.id = generateId("PRD", products.length);
+    const lastNumber = lastProduct
+        ? Number(lastProduct.id.split("-")[1])
+        : 0;
+
+    product.id = generateId("PRD", lastNumber);
 
     product.createdAt = new Date().toISOString();
 
-    products.push(product);
+    product.status = product.status || "Active";
 
-    write(productsFile, products);
+    await productRepository.create(product);
 
     return product;
 
@@ -48,29 +49,27 @@ function createProduct(product) {
 // Update Product
 // ======================================
 
-function updateProduct(id, data) {
+async function updateProduct(id, data) {
 
-    const products = read(productsFile);
+    const product = await productRepository.getById(id);
 
-    const index = products.findIndex(p => p.id === id);
-
-    if (index === -1) {
+    if (!product) {
 
         return null;
 
     }
 
-    products[index] = {
+    const updated = {
 
-        ...products[index],
+        ...product,
 
         ...data
 
     };
 
-    write(productsFile, products);
+    await productRepository.update(id, updated);
 
-    return products[index];
+    return updated;
 
 }
 
@@ -78,17 +77,9 @@ function updateProduct(id, data) {
 // Delete Product
 // ======================================
 
-function deleteProduct(id) {
+async function deleteProduct(id) {
 
-    const products = read(productsFile);
-
-    const updated = products.filter(
-
-        p => p.id !== id
-
-    );
-
-    write(productsFile, updated);
+    await productRepository.delete(id);
 
 }
 
