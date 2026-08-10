@@ -6,6 +6,7 @@ const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const productRoutes = require("./src/routes/productRoutes");
 const orderRoutes = require("./src/routes/orderRoutes");
 const customerRoutes = require("./src/routes/customerRoutes");
+const invoiceRoutes = require("./src/routes/invoiceRoutes");
 
 const app = express();
 
@@ -30,6 +31,8 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 
 app.use("/api/customers", customerRoutes);
+
+app.use("/api/invoice", invoiceRoutes);
 
 // ==========================================
 // Static Files
