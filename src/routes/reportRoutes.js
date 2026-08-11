@@ -2,17 +2,17 @@ const express = require("express");
 
 const router = express.Router();
 
-const invoiceController = require("../controllers/invoiceController");
+const reportController = require("../controllers/reportController");
 
 // ======================================
-// Get Invoice By Order ID
+// Reports
 // ======================================
 
 router.get(
 
-    "/:id",
+    "/",
 
-    invoiceController.getInvoice
+    reportController.getReport
 
 );
 

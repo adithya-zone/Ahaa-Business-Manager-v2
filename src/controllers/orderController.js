@@ -1,13 +1,38 @@
-const service = require("../services/orderService");
-const { success } = require("../utils/response");
+const orderService = require("../services/orderService");
 
 // ======================================
 // Get Orders
 // ======================================
 
-function getOrders(req, res) {
+async function getOrders(req, res) {
 
-    success(res, service.getOrders());
+    try {
+
+        const orders = await orderService.getOrders();
+
+        res.json({
+
+            success: true,
+
+            message: "Success",
+
+            data: orders
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: err.message
+
+        });
+
+    }
 
 }
 
@@ -15,15 +40,25 @@ function getOrders(req, res) {
 // Create Order
 // ======================================
 
-function createOrder(req, res) {
+async function createOrder(req, res) {
 
     try {
 
-        const order = service.createOrder(req.body);
+        const order = await orderService.createOrder(req.body);
 
-        success(res, order, "Order Created");
+        res.json({
+
+            success: true,
+
+            message: "Order created successfully.",
+
+            data: order
+
+        });
 
     } catch (err) {
+
+        console.error(err);
 
         res.status(400).json({
 
@@ -41,11 +76,11 @@ function createOrder(req, res) {
 // Update Order
 // ======================================
 
-function updateOrder(req, res) {
+async function updateOrder(req, res) {
 
     try {
 
-        const order = service.updateOrder(
+        const order = await orderService.updateOrder(
 
             req.params.id,
 
@@ -53,9 +88,19 @@ function updateOrder(req, res) {
 
         );
 
-        success(res, order, "Order Updated");
+        res.json({
+
+            success: true,
+
+            message: "Order updated successfully.",
+
+            data: order
+
+        });
 
     } catch (err) {
+
+        console.error(err);
 
         res.status(400).json({
 
@@ -73,15 +118,23 @@ function updateOrder(req, res) {
 // Delete Order
 // ======================================
 
-function deleteOrder(req, res) {
+async function deleteOrder(req, res) {
 
     try {
 
-        service.deleteOrder(req.params.id);
+        await orderService.deleteOrder(req.params.id);
 
-        success(res, null, "Order Deleted");
+        res.json({
+
+            success: true,
+
+            message: "Order deleted successfully."
+
+        });
 
     } catch (err) {
+
+        console.error(err);
 
         res.status(400).json({
 

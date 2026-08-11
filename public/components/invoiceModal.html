@@ -2,9 +2,12 @@
 
     <div class="modal-content invoice-modal">
 
+        <!-- Header -->
         <div class="modal-header">
 
             <h2>
+
+                <i class="fa-solid fa-file-invoice"></i>
 
                 Invoice Preview
 
@@ -18,51 +21,94 @@
 
         </div>
 
+        <!-- Body -->
         <div class="modal-body">
 
-            <div id="invoiceContent">
+            <div id="invoiceContent" class="invoice-paper">
 
-                <div class="invoice-header">
+                <!-- Company Header -->
 
-                    <h1>AHAA PICKLES</h1>
+                <div class="invoice-company">
 
-                    <p>Fresh & Homemade Pickles</p>
+                    <h1 id="invoiceCompanyName">
+
+                        AHAA BUSINESS MANAGER
+
+                    </h1>
+
+                    <p id="invoiceCompanyAddress"></p>
+
+                    <p>
+
+                        <strong>Phone :</strong>
+
+                        <span id="invoiceCompanyPhone"></span>
+
+                        &nbsp;&nbsp;&nbsp;
+
+                        <strong>Email :</strong>
+
+                        <span id="invoiceCompanyEmail"></span>
+
+                    </p>
 
                 </div>
 
                 <hr>
 
-                <div class="invoice-info">
+                <!-- Invoice Info -->
 
-                    <p>
+                <table class="invoice-info-table">
 
-                        <strong>Invoice No :</strong>
+                    <tr>
 
-                        <span id="invoiceNumber"></span>
+                        <td>
 
-                    </p>
+                            <strong>Invoice No</strong>
 
-                    <p>
+                        </td>
 
-                        <strong>Date :</strong>
+                        <td id="invoiceNumber"></td>
 
-                        <span id="invoiceDate"></span>
+                        <td>
 
-                    </p>
+                            <strong>Date</strong>
 
-                </div>
+                        </td>
 
-                <div class="invoice-customer">
+                        <td id="invoiceDate"></td>
 
-                    <p>
+                    </tr>
 
-                        <strong>Customer :</strong>
+                    <tr>
 
-                        <span id="invoiceCustomer"></span>
+                        <td>
 
-                    </p>
+                            <strong>Customer</strong>
 
-                </div>
+                        </td>
+
+                        <td id="invoiceCustomer"></td>
+
+                        <td>
+
+                            <strong>Status</strong>
+
+                        </td>
+
+                        <td>
+
+                            Paid
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+                <br>
+
+                <!-- Products -->
 
                 <table class="invoice-table">
 
@@ -70,13 +116,29 @@
 
                         <tr>
 
-                            <th>Product</th>
+                            <th style="width:45%">
 
-                            <th>Qty</th>
+                                Product
 
-                            <th>Price</th>
+                            </th>
 
-                            <th>Total</th>
+                            <th>
+
+                                Qty
+
+                            </th>
+
+                            <th>
+
+                                Unit Price
+
+                            </th>
+
+                            <th>
+
+                                Amount
+
+                            </th>
 
                         </tr>
 
@@ -100,27 +162,89 @@
 
                 </table>
 
-                <div class="invoice-grand-total">
+                <br>
 
-                    <strong>
+                <!-- Total -->
 
-                        Grand Total :
+                <table class="invoice-total-table">
 
-                    </strong>
+                    <tr>
 
-                    <span id="invoiceGrandTotal"></span>
+                        <td>
 
-                </div>
+                            Sub Total
 
-                <div class="invoice-footer">
+                        </td>
 
-                    Thank you for your purchase!
+                        <td id="invoiceTotalAmount">
+
+                            ₹0
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>
+
+                            GST (0%)
+
+                        </td>
+
+                        <td>
+
+                            ₹0.00
+
+                        </td>
+
+                    </tr>
+
+                    <tr class="grand-total">
+
+                        <td>
+
+                            Grand Total
+
+                        </td>
+
+                        <td id="invoiceGrandTotal">
+
+                            ₹0
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+                <div class="invoice-note">
+
+                    <h4>
+
+                        Thank You!
+
+                    </h4>
+
+                    <p>
+
+                        Thank you for choosing us.
+
+                    </p>
+
+                    <p>
+
+                        This is a computer generated invoice.
+
+                    </p>
 
                 </div>
 
             </div>
 
         </div>
+
+        <!-- Footer -->
 
         <div class="modal-footer">
 

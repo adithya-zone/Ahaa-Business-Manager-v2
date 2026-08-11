@@ -4,6 +4,7 @@
 
 let customers = [];
 let editingCustomer = null;
+let allCustomers = [];
 
 // ==========================================
 // Load Customers
@@ -24,6 +25,8 @@ async function loadCustomers() {
         }
 
         customers = result.data || [];
+
+        allCustomers = customers;
 
         renderCustomers(customers);
 
@@ -436,7 +439,38 @@ document.addEventListener("click", async function (e) {
     }
 
 });
+// ==========================================
+// Search Customers
+// ==========================================
 
+function searchCustomers() {
+
+    const keyword = document
+        .getElementById("customerSearch")
+        .value
+        .toLowerCase();
+
+    const filtered = allCustomers.filter(customer =>
+
+        customer.id.toLowerCase().includes(keyword) ||
+
+        customer.name.toLowerCase().includes(keyword) ||
+
+        customer.phone.toLowerCase().includes(keyword) ||
+
+        (customer.email || "")
+            .toLowerCase()
+            .includes(keyword) ||
+
+        (customer.city || "")
+            .toLowerCase()
+            .includes(keyword)
+
+    );
+
+    renderCustomers(filtered);
+
+}
 // ==========================================
 // Refresh
 // ==========================================

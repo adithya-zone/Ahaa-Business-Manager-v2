@@ -2,19 +2,26 @@ const BaseRepository = require("./baseRepository");
 
 class SettingsRepository extends BaseRepository {
 
-    async get(key) {
+    async getAll() {
 
-        return await super.get(
-            "SELECT value FROM settings WHERE key = ?",
-            [key]
+        return await this.all(
+
+            `SELECT * FROM settings`
+
         );
 
     }
 
-    async getAll() {
+    async get(key) {
 
-        return await this.all(
-            "SELECT * FROM settings ORDER BY key"
+        return await this.get(
+
+            `SELECT value
+             FROM settings
+             WHERE key=?`,
+
+            [key]
+
         );
 
     }
@@ -23,12 +30,23 @@ class SettingsRepository extends BaseRepository {
 
         await this.run(
 
-            `INSERT INTO settings(key, value)
-             VALUES(?, ?)
-             ON CONFLICT(key)
-             DO UPDATE SET value = excluded.value`,
+            `INSERT INTO settings(key,value)
 
-            [key, value]
+             VALUES(?,?)
+
+             ON CONFLICT(key)
+
+             DO UPDATE SET
+
+             value=excluded.value`,
+
+            [
+
+                key,
+
+                value
+
+            ]
 
         );
 

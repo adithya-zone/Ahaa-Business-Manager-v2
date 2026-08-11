@@ -1,0 +1,239 @@
+/* ==========================================
+   Invoice Paper
+========================================== */
+
+.invoice-modal {
+
+    width: 900px;
+    max-width: 95%;
+    background: #fff;
+    border-radius: 12px;
+
+}
+
+.invoice-paper {
+
+    background: #fff;
+    color: #222;
+    padding: 35px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+
+}
+
+/* ==========================================
+   Company
+========================================== */
+
+.invoice-company {
+
+    text-align: center;
+    margin-bottom: 25px;
+
+}
+
+.invoice-company h1 {
+
+    margin: 0;
+    color: #0f172a;
+    font-size: 32px;
+    letter-spacing: 1px;
+
+}
+
+.invoice-company p {
+
+    margin: 6px 0;
+    color: #555;
+    font-size: 15px;
+
+}
+
+/* ==========================================
+   Info Table
+========================================== */
+
+.invoice-info-table {
+
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+
+}
+
+.invoice-info-table td {
+
+    border: 1px solid #dcdcdc;
+    padding: 12px;
+    font-size: 14px;
+
+}
+
+.invoice-info-table strong {
+
+    color: #111827;
+
+}
+
+/* ==========================================
+   Product Table
+========================================== */
+
+.invoice-table {
+
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+
+}
+
+.invoice-table thead {
+
+    background: #2563eb;
+    color: white;
+
+}
+
+.invoice-table th {
+
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+
+}
+
+.invoice-table td {
+
+    padding: 12px;
+    border: 1px solid #ddd;
+
+}
+
+.invoice-table tbody tr:nth-child(even) {
+
+    background: #f8fafc;
+
+}
+
+/* ==========================================
+   Totals
+========================================== */
+
+.invoice-total-table {
+
+    width: 320px;
+    margin-left: auto;
+    margin-top: 25px;
+    border-collapse: collapse;
+
+}
+
+.invoice-total-table td {
+
+    border: 1px solid #ddd;
+    padding: 10px;
+
+}
+
+.invoice-total-table td:last-child {
+
+    text-align: right;
+    font-weight: 600;
+
+}
+
+.grand-total {
+
+    background: #2563eb;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+
+}
+
+/* ==========================================
+   Footer
+========================================== */
+
+.invoice-note {
+
+    margin-top: 45px;
+    text-align: center;
+
+}
+
+.invoice-note h4 {
+
+    margin-bottom: 10px;
+    color: #2563eb;
+
+}
+
+.invoice-note p {
+
+    margin: 4px 0;
+    color: #666;
+
+}
+
+/* ==========================================
+   Print
+========================================== */
+
+@media print {
+
+    body {
+
+        background: white;
+
+    }
+
+    .modal-header,
+    .modal-footer {
+
+        display: none !important;
+
+    }
+
+    .invoice-modal {
+
+        width: 100%;
+        box-shadow: none;
+        border: none;
+
+    }
+
+    .invoice-paper {
+
+        border: none;
+        padding: 0;
+
+    }
+
+}
+
+/* ==========================================
+   Mobile
+========================================== */
+
+@media(max-width:768px){
+
+    .invoice-paper{
+
+        padding:20px;
+
+    }
+
+    .invoice-company h1{
+
+        font-size:24px;
+
+    }
+
+    .invoice-total-table{
+
+        width:100%;
+
+    }
+
+}

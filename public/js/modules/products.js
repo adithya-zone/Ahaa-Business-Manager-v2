@@ -3,7 +3,7 @@
 // ==========================================
 
 let editingProductId = null;
-
+let allProducts = [];
 // ==========================================
 // Load Products
 // ==========================================
@@ -20,7 +20,9 @@ async function loadProducts() {
 
         table.innerHTML = "";
 
-        const products = result.data || [];
+        allProducts = result.data || [];
+
+const products = allProducts;
 
         if (products.length === 0) {
 
@@ -364,5 +366,95 @@ function bindProductEvents() {
         saveBtn.onclick = saveProduct;
 
     }
+
+}
+// ==========================================
+// Search Products
+// ==========================================
+
+function searchProducts() {
+
+    const keyword = document
+        .getElementById("productSearch")
+        .value
+        .toLowerCase();
+
+    const table = document.getElementById("productTable");
+
+    table.innerHTML = "";
+
+    const filtered = allProducts.filter(product =>
+
+        product.name.toLowerCase().includes(keyword) ||
+
+        product.category.toLowerCase().includes(keyword) ||
+
+        product.id.toLowerCase().includes(keyword)
+
+    );
+
+    if (filtered.length === 0) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center;padding:25px;">
+                    No products found
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+    filtered.forEach(product => {
+
+        table.innerHTML += `
+        <tr>
+
+            <td>${product.id}</td>
+
+            <td>${product.name}</td>
+
+            <td>${product.category}</td>
+
+            <td>₹${product.price}</td>
+
+            <td>${product.stock}</td>
+
+            <td>
+
+                <span class="status-badge">
+
+                    ${product.status}
+
+                </span>
+
+            </td>
+
+            <td>
+
+                <button
+                    class="action-btn edit-btn"
+                    onclick="editProduct('${product.id}')">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </button>
+
+                <button
+                    class="action-btn delete-btn"
+                    onclick="deleteProduct('${product.id}')">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </button>
+
+            </td>
+
+        </tr>
+        `;
+
+    });
 
 }

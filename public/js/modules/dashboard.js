@@ -4,7 +4,7 @@
 
 async function loadDashboard() {
 
-    loadDashboardStats();
+    await loadDashboardStats();
 
 }
 
@@ -14,16 +14,46 @@ async function loadDashboard() {
 
 async function loadDashboardStats() {
 
-    const products = await ApiService.get("/api/products");
+    try {
 
-    const totalProducts = products.data.length;
+        const result = await ApiService.get("/api/dashboard");
 
-    document.getElementById("totalProducts").textContent = totalProducts;
+        if (!result.success) {
 
-    document.getElementById("totalOrders").textContent = 0;
+            Toast.show(result.message, "error");
 
-    document.getElementById("totalCustomers").textContent = 0;
+            return;
 
-    document.getElementById("totalRevenue").textContent = "₹0";
+        }
+
+        const data = result.data;
+
+        document.getElementById("totalProducts").textContent =
+            data.totalProducts;
+
+        document.getElementById("totalOrders").textContent =
+            data.totalOrders;
+
+        document.getElementById("totalCustomers").textContent =
+            data.totalCustomers;
+
+        document.getElementById("totalRevenue").textContent =
+            `₹${Number(data.totalRevenue).toLocaleString()}`;
+
+        document.getElementById("todaySales").textContent =
+            `₹${Number(data.todaySales).toLocaleString()}`;
+
+        document.getElementById("monthlySales").textContent =
+            `₹${Number(data.monthlySales).toLocaleString()}`;
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        Toast.show("Unable to load dashboard.", "error");
+
+    }
 
 }

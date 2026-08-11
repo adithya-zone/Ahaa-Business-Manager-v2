@@ -96,6 +96,22 @@ case "orders":
 
         break;
 
+        case "reports":
+        if (typeof loadReports === "function") {
+            loadReports();
+        }
+        break;   
+
+        case "settings":
+
+    if (typeof loadSettings === "function") {
+
+        loadSettings();
+
+    }
+
+    break;
+
 }
 
     } catch (err) {

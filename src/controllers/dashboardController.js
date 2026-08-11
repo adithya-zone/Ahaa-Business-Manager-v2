@@ -1,16 +1,28 @@
 const service = require("../services/dashboardService");
 
-const { success } = require("../utils/response");
+const { success, error } = require("../utils/response");
 
-function getDashboard(req, res) {
+// ==========================================
+// Dashboard
+// ==========================================
 
-    success(
+async function getDashboard(req, res) {
 
-        res,
+    try {
 
-        service.getDashboardStats()
+        const stats = await service.getDashboardStats();
 
-    );
+        success(res, stats);
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        error(res, err.message, 500);
+
+    }
 
 }
 

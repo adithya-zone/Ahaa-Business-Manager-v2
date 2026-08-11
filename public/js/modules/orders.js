@@ -8,6 +8,8 @@ let products = [];
 
 let editingOrderId = null;
 
+let allOrders = [];
+
 // ==========================================
 // Load Orders
 // ==========================================
@@ -33,6 +35,8 @@ async function loadOrders() {
         }
 
         orders = result.data || [];
+
+        allOrders = result.data || [];
 
         renderOrders(orders);
 
@@ -705,5 +709,29 @@ if (typeof window !== "undefined") {
     window.loadOrders = loadOrders;
 
     window.initializeOrders = initializeOrders;
+
+}
+// ==========================================
+// Search Orders
+// ==========================================
+
+function searchOrders() {
+
+    const keyword = document
+        .getElementById("orderSearch")
+        .value
+        .toLowerCase();
+
+    const filtered = allOrders.filter(order =>
+
+        order.id.toLowerCase().includes(keyword) ||
+
+        order.customer.toLowerCase().includes(keyword) ||
+
+        order.productName.toLowerCase().includes(keyword)
+
+    );
+
+    renderOrders(filtered);
 
 }

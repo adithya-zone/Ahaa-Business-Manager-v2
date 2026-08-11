@@ -1,28 +1,47 @@
-const { read } = require("../utils/dataStore");
+const productRepository = require("../repositories/productRepository");
+const customerRepository = require("../repositories/customerRepository");
+const orderRepository = require("../repositories/orderRepository");
 
-const {
+async function getDashboardStats() {
 
-    productsFile,
+    const products = await productRepository.getAll();
 
-    ordersFile,
+    const customers = await customerRepository.getAll();
 
-    customersFile
+    const orders = await orderRepository.getAll();
 
-} = require("../models/dashboardModel");
+    let totalRevenue = 0;
+    let todaySales = 0;
+    let monthlySales = 0;
 
-function getDashboardStats() {
-
-    const products = read(productsFile);
-
-    const orders = read(ordersFile);
-
-    const customers = read(customersFile);
-
-    let revenue = 0;
+    const today = new Date().toISOString().split("T")[0];
+    const currentMonth = today.substring(0, 7); // YYYY-MM
 
     orders.forEach(order => {
 
-        revenue += Number(order.total || 0);
+        const total = Number(order.total || 0);
+
+        totalRevenue += total;
+
+        if (order.createdAt) {
+
+            const orderDate = order.createdAt.substring(0, 10);
+
+            const orderMonth = order.createdAt.substring(0, 7);
+
+            if (orderDate === today) {
+
+                todaySales += total;
+
+            }
+
+            if (orderMonth === currentMonth) {
+
+                monthlySales += total;
+
+            }
+
+        }
 
     });
 
@@ -30,11 +49,15 @@ function getDashboardStats() {
 
         totalProducts: products.length,
 
-        totalOrders: orders.length,
-
         totalCustomers: customers.length,
 
-        totalRevenue: revenue
+        totalOrders: orders.length,
+
+        totalRevenue,
+
+        todaySales,
+
+        monthlySales
 
     };
 

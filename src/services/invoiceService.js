@@ -1,50 +1,67 @@
-const { read } = require("../utils/dataStore");
-const { ordersFile } = require("../models/orderModel");
+const invoiceRepository = require("../repositories/invoiceRepository");
 
-// ======================================
-// Get Invoice By Order ID
-// ======================================
+class InvoiceService {
 
-function getInvoice(orderId) {
+    // ======================================
+    // Get Invoice
+    // ======================================
 
-    const orders = read(ordersFile);
+    async getInvoice(orderId) {
 
-    const order = orders.find(
+        const invoice = await invoiceRepository.getInvoice(orderId);
 
-        o => o.id === orderId
+        if (!invoice) {
 
-    );
+            throw new Error("Invoice not found.");
 
-    if (!order) {
+        }
 
-        throw new Error("Order not found.");
+        const settings = await invoiceRepository.getSettings();
+
+        return {
+
+            invoiceNo: invoice.id,
+
+            date: new Date(invoice.createdAt).toLocaleDateString(),
+
+            customer: invoice.customer,
+
+            product: invoice.productName,
+
+            quantity: invoice.quantity,
+
+            price: invoice.price,
+
+            total: invoice.total,
+
+            companyName:
+
+                settings.companyName ||
+
+                "AHAA BUSINESS MANAGER",
+
+            companyAddress:
+
+                settings.companyAddress ||
+
+                "",
+
+            companyPhone:
+
+                settings.companyPhone ||
+
+                "",
+
+            companyEmail:
+
+                settings.companyEmail ||
+
+                ""
+
+        };
 
     }
 
-    return {
-
-        invoiceNo: order.id.replace("ORD", "INV"),
-
-        date: new Date(order.createdAt).toLocaleDateString(),
-
-        customer: order.customer,
-
-        product: order.productName,
-
-        quantity: order.quantity,
-
-        price: Number(order.total) / Number(order.quantity),
-
-        total: order.total,
-
-        status: order.status
-
-    };
-
 }
 
-module.exports = {
-
-    getInvoice
-
-};
+module.exports = new InvoiceService();

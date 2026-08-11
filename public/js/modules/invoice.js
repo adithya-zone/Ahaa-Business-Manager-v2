@@ -48,7 +48,7 @@ async function openInvoice(orderId) {
 
         console.error(
 
-            "INVOICE ERROR:",
+            "Invoice Error:",
 
             err
 
@@ -72,35 +72,85 @@ async function openInvoice(orderId) {
 
 function renderInvoice(invoice) {
 
+    // -------------------------
+    // Company Details
+    // -------------------------
+
+    document.getElementById(
+
+        "invoiceCompanyName"
+
+    ).textContent =
+
+        invoice.companyName;
+
+    document.getElementById(
+
+        "invoiceCompanyAddress"
+
+    ).textContent =
+
+        invoice.companyAddress;
+
+    document.getElementById(
+
+        "invoiceCompanyPhone"
+
+    ).textContent =
+
+        invoice.companyPhone;
+
+    document.getElementById(
+
+        "invoiceCompanyEmail"
+
+    ).textContent =
+
+        invoice.companyEmail;
+
+    // -------------------------
+    // Invoice Details
+    // -------------------------
+
     document.getElementById(
 
         "invoiceNumber"
 
-    ).textContent = invoice.invoiceNo;
+    ).textContent =
+
+        invoice.invoiceNo;
 
     document.getElementById(
 
         "invoiceDate"
 
-    ).textContent = invoice.date;
+    ).textContent =
+
+        invoice.date;
 
     document.getElementById(
 
         "invoiceCustomer"
 
-    ).textContent = invoice.customer;
+    ).textContent =
+
+        invoice.customer;
 
     document.getElementById(
 
         "invoiceProduct"
 
-    ).textContent = invoice.product;
+    ).textContent =
+
+        invoice.product;
 
     document.getElementById(
 
         "invoiceQty"
 
-    ).textContent = invoice.quantity;
+    ).textContent =
+
+        invoice.quantity;
 
     document.getElementById(
 
@@ -108,7 +158,7 @@ function renderInvoice(invoice) {
 
     ).textContent =
 
-        "₹" + invoice.price;
+        "₹" + Number(invoice.price).toFixed(2);
 
     document.getElementById(
 
@@ -116,7 +166,15 @@ function renderInvoice(invoice) {
 
     ).textContent =
 
-        "₹" + invoice.total;
+        "₹" + Number(invoice.total).toFixed(2);
+
+    document.getElementById(
+
+        "invoiceTotalAmount"
+
+    ).textContent =
+
+        "₹" + Number(invoice.total).toFixed(2);
 
     document.getElementById(
 
@@ -124,7 +182,7 @@ function renderInvoice(invoice) {
 
     ).textContent =
 
-        "₹" + invoice.total;
+        "₹" + Number(invoice.total).toFixed(2);
 
 }
 
@@ -134,19 +192,14 @@ function renderInvoice(invoice) {
 
 function closeInvoice() {
 
-    const modal = document.getElementById(
+    document.getElementById(
 
         "invoiceModal"
 
-    );
-
-    if (modal) {
-
-        modal.style.display = "none";
-
-    }
+    ).style.display = "none";
 
 }
+
 // ==========================================
 // Print Invoice
 // ==========================================
@@ -159,7 +212,7 @@ function printInvoice() {
 
     ).innerHTML;
 
-    const printWindow = window.open(
+    const win = window.open(
 
         "",
 
@@ -169,7 +222,7 @@ function printInvoice() {
 
     );
 
-    printWindow.document.write(`
+    win.document.write(`
 
         <html>
 
@@ -177,23 +230,17 @@ function printInvoice() {
 
             <title>Invoice</title>
 
+            <link rel="stylesheet" href="css/style.css">
+
             <style>
 
                 body{
 
-                    font-family:Arial,sans-serif;
+                    font-family:Poppins,Arial,sans-serif;
 
                     padding:30px;
 
                     color:#222;
-
-                }
-
-                h1{
-
-                    text-align:center;
-
-                    margin-bottom:5px;
 
                 }
 
@@ -209,7 +256,7 @@ function printInvoice() {
 
                 table,th,td{
 
-                    border:1px solid #ccc;
+                    border:1px solid #ddd;
 
                 }
 
@@ -221,25 +268,21 @@ function printInvoice() {
 
                 }
 
-                .invoice-grand-total{
+                .invoice-header{
 
-                    margin-top:20px;
+                    text-align:center;
 
-                    text-align:right;
-
-                    font-size:18px;
-
-                    font-weight:bold;
+                    margin-bottom:25px;
 
                 }
 
                 .invoice-footer{
 
-                    margin-top:35px;
+                    margin-top:40px;
 
                     text-align:center;
 
-                    font-size:14px;
+                    color:#666;
 
                 }
 
@@ -257,11 +300,11 @@ function printInvoice() {
 
     `);
 
-    printWindow.document.close();
+    win.document.close();
 
-    printWindow.focus();
+    win.focus();
 
-    printWindow.print();
+    win.print();
 
 }
 
@@ -271,154 +314,182 @@ function printInvoice() {
 
 function downloadInvoice() {
 
-    printInvoice();
+    const element = document.getElementById(
+
+        "invoiceContent"
+
+    );
+
+    html2pdf()
+
+        .set({
+
+            margin: 10,
+
+            filename: `Invoice-${currentInvoice.invoiceNo}.pdf`,
+
+            image: {
+
+                type: "jpeg",
+
+                quality: 1
+
+            },
+
+            html2canvas: {
+
+                scale: 2
+
+            },
+
+            jsPDF: {
+
+                unit: "mm",
+
+                format: "a4",
+
+                orientation: "portrait"
+
+            }
+
+        })
+
+        .from(element)
+
+        .save();
 
 }
+
 // ==========================================
 // Event Binding
 // ==========================================
 
-document.addEventListener("click", function (e) {
+document.addEventListener(
 
-    // --------------------------------------
-    // Invoice Button
-    // --------------------------------------
+    "click",
 
-    const invoiceBtn = e.target.closest(
+    function (e) {
 
-        ".invoice-btn"
+        const invoiceBtn = e.target.closest(
 
-    );
-
-    if (invoiceBtn) {
-
-        openInvoice(
-
-            invoiceBtn.dataset.id
+            ".invoice-btn"
 
         );
 
-        return;
+        if (invoiceBtn) {
+
+            openInvoice(
+
+                invoiceBtn.dataset.id
+
+            );
+
+            return;
+
+        }
+
+        if (
+
+            e.target.closest(
+
+                "#closeInvoiceModal"
+
+            )
+
+        ) {
+
+            closeInvoice();
+
+            return;
+
+        }
+
+        if (
+
+            e.target.closest(
+
+                "#printInvoiceBtn"
+
+            )
+
+        ) {
+
+            printInvoice();
+
+            return;
+
+        }
+
+        if (
+
+            e.target.closest(
+
+                "#downloadInvoiceBtn"
+
+            )
+
+        ) {
+
+            downloadInvoice();
+
+            return;
+
+        }
 
     }
 
-    // --------------------------------------
-    // Print
-    // --------------------------------------
-
-    if (
-
-        e.target.closest(
-
-            "#printInvoiceBtn"
-
-        )
-
-    ) {
-
-        printInvoice();
-
-        return;
-
-    }
-
-    // --------------------------------------
-    // Download PDF
-    // --------------------------------------
-
-    if (
-
-        e.target.closest(
-
-            "#downloadInvoiceBtn"
-
-        )
-
-    ) {
-
-        downloadInvoice();
-
-        return;
-
-    }
-
-    // --------------------------------------
-    // Close
-    // --------------------------------------
-
-    if (
-
-        e.target.closest(
-
-            "#closeInvoiceModal"
-
-        )
-
-        ||
-
-        e.target.closest(
-
-            "#cancelInvoiceBtn"
-
-        )
-
-    ) {
-
-        closeInvoice();
-
-        return;
-
-    }
-
-});
-// ==========================================
-// Auto Initialize
-// ==========================================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    console.log("Invoice Module Loaded");
-
-});
+);
 
 // ==========================================
 // ESC Key Support
 // ==========================================
 
-document.addEventListener("keydown", function (e) {
+document.addEventListener(
 
-    if (
+    "keydown",
 
-        e.key === "Escape"
+    function (e) {
 
-    ) {
+        if (e.key === "Escape") {
 
-        closeInvoice();
+            closeInvoice();
 
-    }
-
-});
-
-// ==========================================
-// Close When Clicking Outside Modal
-// ==========================================
-
-window.addEventListener("click", function (e) {
-
-    const modal = document.getElementById(
-
-        "invoiceModal"
-
-    );
-
-    if (
-
-        e.target === modal
-
-    ) {
-
-        closeInvoice();
+        }
 
     }
 
-});
+);
+
+// ==========================================
+// Click Outside Modal
+// ==========================================
+
+window.addEventListener(
+
+    "click",
+
+    function (e) {
+
+        const modal = document.getElementById(
+
+            "invoiceModal"
+
+        );
+
+        if (
+
+            modal &&
+
+            e.target === modal
+
+        ) {
+
+            closeInvoice();
+
+        }
+
+    }
+
+);
+
+console.log("✅ Invoice Module Loaded");

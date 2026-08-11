@@ -9,9 +9,11 @@ class OrderRepository extends BaseRepository {
     async getAll() {
 
         return await this.all(
+
             `SELECT *
              FROM orders
              ORDER BY createdAt DESC`
+
         );
 
     }
@@ -23,25 +25,31 @@ class OrderRepository extends BaseRepository {
     async getById(id) {
 
         return await this.get(
+
             `SELECT *
              FROM orders
              WHERE id = ?`,
+
             [id]
+
         );
 
     }
 
     // ======================================
-    // Get Last Order
+    // Get Product By ID
     // ======================================
 
-    async getLastOrder() {
+    async getProduct(productId) {
 
         return await this.get(
-            `SELECT id
-             FROM orders
-             ORDER BY id DESC
-             LIMIT 1`
+
+            `SELECT *
+             FROM products
+             WHERE id = ?`,
+
+            [productId]
+
         );
 
     }
@@ -53,8 +61,9 @@ class OrderRepository extends BaseRepository {
     async create(order) {
 
         await this.run(
-            `INSERT INTO orders
-            (
+
+            `INSERT INTO orders(
+
                 id,
                 customer,
                 productId,
@@ -64,10 +73,13 @@ class OrderRepository extends BaseRepository {
                 status,
                 paymentMethod,
                 createdAt
+
             )
-            VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+
+            VALUES(?,?,?,?,?,?,?,?,?)`,
+
             [
+
                 order.id,
                 order.customer,
                 order.productId,
@@ -75,9 +87,11 @@ class OrderRepository extends BaseRepository {
                 order.quantity,
                 order.total,
                 order.status,
-                order.paymentMethod || "Cash",
+                order.paymentMethod,
                 order.createdAt
+
             ]
+
         );
 
         return order;
@@ -91,8 +105,11 @@ class OrderRepository extends BaseRepository {
     async update(id, order) {
 
         await this.run(
+
             `UPDATE orders
+
              SET
+
                 customer=?,
                 productId=?,
                 productName=?,
@@ -100,17 +117,22 @@ class OrderRepository extends BaseRepository {
                 total=?,
                 status=?,
                 paymentMethod=?
+
              WHERE id=?`,
+
             [
+
                 order.customer,
                 order.productId,
                 order.productName,
                 order.quantity,
                 order.total,
                 order.status,
-                order.paymentMethod || "Cash",
+                order.paymentMethod,
                 id
+
             ]
+
         );
 
     }
@@ -122,39 +144,43 @@ class OrderRepository extends BaseRepository {
     async delete(id) {
 
         await this.run(
+
             `DELETE FROM orders
+
              WHERE id=?`,
-            [id]
+
+            [
+
+                id
+
+            ]
+
         );
 
     }
 
     // ======================================
-    // Today's Sales
+    // Update Product Stock
     // ======================================
 
-    async getTodaySales() {
+    async updateStock(productId, stock) {
 
-        return await this.get(
-            `SELECT
-                IFNULL(SUM(total),0) AS total
-             FROM orders
-             WHERE DATE(createdAt)=DATE('now','localtime')`
-        );
+        await this.run(
 
-    }
+            `UPDATE products
 
-    // ======================================
-    // Monthly Sales
-    // ======================================
+             SET stock=?
 
-    async getMonthlySales() {
+             WHERE id=?`,
 
-        return await this.get(
-            `SELECT
-                IFNULL(SUM(total),0) AS total
-             FROM orders
-             WHERE strftime('%Y-%m',createdAt)=strftime('%Y-%m','now','localtime')`
+            [
+
+                stock,
+
+                productId
+
+            ]
+
         );
 
     }
