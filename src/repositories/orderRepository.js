@@ -98,37 +98,39 @@ class OrderRepository extends BaseRepository {
 
         // Save every product in order_items
 
-        for (const item of items) {
+for (const item of items) {
 
-            await this.run(
+    await this.run(
 
-                `INSERT INTO order_items(
+        `INSERT INTO order_items(
 
-                    orderId,
-                    productId,
-                    productName,
-                    quantity,
-                    price,
-                    total
+            orderId,
+            productId,
+            productName,
+            weightKg,
+            quantity,
+            price,
+            total
 
-                )
+        )
 
-                VALUES(?,?,?,?,?,?)`,
+        VALUES(?,?,?,?,?,?,?)`,
 
-                [
+        [
 
-                    order.id,
-                    item.productId,
-                    item.productName,
-                    item.quantity,
-                    item.price,
-                    item.total
+            order.id,
+            item.productId,
+            item.productName,
+            item.weightKg,
+            item.quantity,
+            item.price,
+            item.total
 
-                ]
+        ]
 
-            );
+    );
 
-        }
+}
 
         return order;
 
@@ -143,14 +145,15 @@ class OrderRepository extends BaseRepository {
         return await this.all(
 
             `SELECT
-                id,
-                orderId,
-                productId,
-                productName,
-                quantity,
-                price,
-                total
-             FROM order_items
+    id,
+    orderId,
+    productId,
+    productName,
+    weightKg,
+    quantity,
+    price,
+    total
+FROM order_items
              WHERE orderId = ?
              ORDER BY id ASC`,
 

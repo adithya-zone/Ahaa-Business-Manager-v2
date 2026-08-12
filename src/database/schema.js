@@ -62,6 +62,7 @@ async function createSchema(db) {
             orderId TEXT NOT NULL,
             productId TEXT NOT NULL,
             productName TEXT NOT NULL,
+            weightKg REAL,
             quantity REAL NOT NULL,
             price REAL NOT NULL,
             total REAL NOT NULL,
@@ -72,6 +73,42 @@ async function createSchema(db) {
         );
     `);
 
+// ==========================================
+// Add Weight Column To Existing Orders
+// ==========================================
+
+try {
+
+    const columns = await db.all(
+        `PRAGMA table_info(order_items)`
+    );
+
+    const hasWeightColumn = columns.some(
+        column => column.name === "weightKg"
+    );
+
+    if (!hasWeightColumn) {
+
+        await db.exec(
+            `ALTER TABLE order_items
+             ADD COLUMN weightKg REAL`
+        );
+
+        console.log(
+            "✅ Added weightKg column to order_items"
+        );
+
+    }
+
+}
+catch (err) {
+
+    console.error(
+        "❌ Failed to add weightKg column:",
+        err
+    );
+
+}
     // ==========================================
     // Settings
     // ==========================================

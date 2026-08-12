@@ -1,7 +1,14 @@
 <div id="orderModal" class="modal">
 
-    <div class="modal-content">
+    <div
+        class="modal-content"
+        style="
+            width: 650px;
+            max-width: 95%;
+        "
+    >
 
+        <!-- Header -->
         <div class="modal-header">
 
             <h2 id="orderModalTitle">
@@ -10,86 +17,163 @@
 
             <button
                 type="button"
-                id="closeOrderModal">
-
+                id="closeOrderModal"
+            >
                 <i class="fa-solid fa-xmark"></i>
-
             </button>
 
         </div>
 
+
+        <!-- Form -->
         <form id="orderForm">
 
             <div class="modal-body">
 
                 <!-- Customer -->
-
                 <div class="form-group">
 
-                    <label>Customer Name</label>
+                    <label>
+                        Customer Name
+                    </label>
 
                     <input
                         type="text"
                         id="orderCustomer"
                         placeholder="Walk-in Customer"
-                        required>
+                        required
+                    >
 
                 </div>
 
 
-                <!-- Products -->
-
+                <!-- Products Section -->
                 <div class="form-group">
 
-                    <div style="
-                        display:flex;
-                        justify-content:space-between;
-                        align-items:center;
-                        margin-bottom:10px;
-                    ">
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            margin-bottom:10px;
+                        "
+                    >
 
-                        <label style="margin:0;">
+                        <label
+                            style="
+                                margin:0;
+                                font-weight:600;
+                            "
+                        >
                             Products
                         </label>
 
                         <button
                             type="button"
+                            id="addOrderItemBtn"
                             class="btn-secondary"
-                            id="addOrderItemBtn">
-
+                            style="
+                                padding:7px 12px;
+                                font-size:13px;
+                            "
+                        >
                             <i class="fa-solid fa-plus"></i>
-
                             Add Product
-
                         </button>
 
                     </div>
 
 
-                    <div id="orderItemsContainer">
+                    <!-- Column Headers -->
 
-                        <!-- Product rows are added by orders.js -->
+                    <div
+                        style="
+                            display:grid;
+                            grid-template-columns:
+                                minmax(160px, 2fr)
+                                120px
+                                100px
+                                120px
+                                45px;
+                            gap:8px;
+                            align-items:center;
+                            margin-bottom:6px;
+                            padding:0 2px;
+                        "
+                    >
+
+                        <div
+                            style="
+                                font-size:12px;
+                                font-weight:600;
+                            "
+                        >
+                            Product
+                        </div>
+
+                        <div
+                            style="
+                                font-size:12px;
+                                font-weight:600;
+                            "
+                        >
+                            Weight (KG)
+                        </div>
+
+                        <div
+                            style="
+                                font-size:12px;
+                                font-weight:600;
+                            "
+                        >
+                            Quantity
+                        </div>
+
+                        <div
+                            style="
+                                font-size:12px;
+                                font-weight:600;
+                                text-align:right;
+                            "
+                        >
+                            Amount
+                        </div>
+
+                        <div></div>
 
                     </div>
 
-                </div>
+
+                    <!-- Dynamic Product Rows -->
+
+                    <div id="orderItemsContainer"></div>
 
 
-                <!-- Order Total -->
+                    <!-- Grand Total -->
 
-                <div
-                    class="form-group"
-                    style="
-                        text-align:right;
-                        font-size:18px;
-                        font-weight:600;
-                    ">
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:flex-end;
+                            align-items:center;
+                            gap:10px;
+                            margin-top:12px;
+                            padding-top:10px;
+                            border-top:1px solid #ddd;
+                        "
+                    >
 
-                    Total:
+                        <strong>
+                            Total:
+                        </strong>
 
-                    <span id="orderGrandTotal">
-                        ₹0.00
-                    </span>
+                        <strong
+                            id="orderGrandTotal"
+                        >
+                            ₹0.00
+                        </strong>
+
+                    </div>
 
                 </div>
 
@@ -98,9 +182,13 @@
 
                 <div class="form-group">
 
-                    <label>Status</label>
+                    <label>
+                        Status
+                    </label>
 
-                    <select id="orderStatus">
+                    <select
+                        id="orderStatus"
+                    >
 
                         <option value="Pending">
                             Pending
@@ -121,24 +209,24 @@
             </div>
 
 
+            <!-- Footer -->
+
             <div class="modal-footer">
 
                 <button
                     type="button"
                     class="btn-secondary"
-                    id="cancelOrderBtn">
-
+                    id="cancelOrderBtn"
+                >
                     Cancel
-
                 </button>
 
                 <button
                     type="button"
                     class="btn-primary"
-                    id="saveOrderBtn">
-
+                    id="saveOrderBtn"
+                >
                     Save Order
-
                 </button>
 
             </div>

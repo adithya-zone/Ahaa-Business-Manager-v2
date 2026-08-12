@@ -25,7 +25,7 @@ async function loadOrders() {
         if (!result.success) {
 
             Toast.show(
-                result.message,
+                result.message || "Unable to load orders.",
                 "error"
             );
 
@@ -43,7 +43,7 @@ async function loadOrders() {
 
     catch (err) {
 
-        console.error(err);
+        console.error("Load Orders Error:", err);
 
         Toast.show(
             "Unable to load orders.",
@@ -83,7 +83,7 @@ async function loadOrderProducts() {
 
     catch (err) {
 
-        console.error(err);
+        console.error("Load Products Error:", err);
 
         Toast.show(
             "Unable to load products.",
@@ -96,7 +96,7 @@ async function loadOrderProducts() {
 
 
 // ==========================================
-// Create Product Options
+// Product Options
 // ==========================================
 
 function getProductOptions(selectedId = "") {
@@ -118,9 +118,7 @@ function getProductOptions(selectedId = "") {
             <option
                 value="${product.id}"
                 ${selected}>
-
                 ${product.name}
-
             </option>
         `;
 
@@ -142,8 +140,16 @@ function addOrderItemRow(item = null) {
             "orderItemsContainer"
         );
 
-    if (!container) return;
+    if (!container) {
 
+        return;
+
+    }
+
+
+    // --------------------------------------
+    // Create row
+    // --------------------------------------
 
     const row =
         document.createElement("div");
@@ -151,31 +157,52 @@ function addOrderItemRow(item = null) {
     row.className =
         "order-item-row";
 
+
     row.style.cssText = `
         display:grid;
         grid-template-columns:
-            minmax(180px, 2fr)
-            90px
-            110px
-            40px;
-        gap:10px;
+            minmax(160px, 2fr)
+            120px
+            100px
+            120px
+            45px;
+        gap:8px;
         align-items:center;
         margin-bottom:10px;
     `;
 
 
+    // --------------------------------------
+    // Default values
+    // --------------------------------------
+
     const selectedProduct =
         item?.productId || "";
 
+    const weightKg =
+        item?.weightKg !== undefined &&
+        item?.weightKg !== null
+            ? item.weightKg
+            : 1;
 
     const quantity =
-        item?.quantity || 1;
+        item?.quantity !== undefined &&
+        item?.quantity !== null
+            ? item.quantity
+            : 1;
 
+
+    // --------------------------------------
+    // Row HTML
+    // --------------------------------------
 
     row.innerHTML = `
 
+        <!-- Product -->
+
         <select
             class="order-item-product"
+            title="Product"
             required>
 
             ${getProductOptions(
@@ -185,25 +212,48 @@ function addOrderItemRow(item = null) {
         </select>
 
 
+        <!-- Weight -->
+
+        <input
+            type="number"
+            class="order-item-weight"
+            min="0.001"
+            step="0.001"
+            value="${weightKg}"
+            placeholder="Weight KG"
+            title="Weight in KG"
+            required>
+
+
+        <!-- Quantity -->
+
         <input
             type="number"
             class="order-item-quantity"
             min="1"
+            step="1"
             value="${quantity}"
+            placeholder="Quantity"
+            title="Quantity"
             required>
 
+
+        <!-- Amount -->
 
         <div
             class="order-item-total"
             style="
                 text-align:right;
                 font-weight:600;
+                white-space:nowrap;
             ">
 
             ₹0.00
 
         </div>
 
+
+        <!-- Delete -->
 
         <button
             type="button"
@@ -220,9 +270,18 @@ function addOrderItemRow(item = null) {
     container.appendChild(row);
 
 
+    // ======================================
+    // Get Controls
+    // ======================================
+
     const productSelect =
         row.querySelector(
             ".order-item-product"
+        );
+
+    const weightInput =
+        row.querySelector(
+            ".order-item-weight"
         );
 
     const quantityInput =
@@ -230,23 +289,50 @@ function addOrderItemRow(item = null) {
             ".order-item-quantity"
         );
 
+    const removeButton =
+        row.querySelector(
+            ".remove-order-item"
+        );
+
+
+    // ======================================
+    // Events
+    // ======================================
 
     productSelect.addEventListener(
         "change",
-        updateOrderItemRow
+        function () {
+
+            updateOrderItemRow.call(
+                productSelect
+            );
+
+        }
+    );
+
+
+    weightInput.addEventListener(
+        "input",
+        function () {
+
+            updateOrderItemRow.call(
+                weightInput
+            );
+
+        }
     );
 
 
     quantityInput.addEventListener(
         "input",
-        updateOrderItemRow
+        function () {
+
+            updateOrderItemRow.call(
+                quantityInput
+            );
+
+        }
     );
-
-
-    const removeButton =
-        row.querySelector(
-            ".remove-order-item"
-        );
 
 
     removeButton.addEventListener(
@@ -258,7 +344,6 @@ function addOrderItemRow(item = null) {
                     ".order-item-row"
                 );
 
-            // Keep at least one row
 
             if (rows.length <= 1) {
 
@@ -271,6 +356,7 @@ function addOrderItemRow(item = null) {
 
             }
 
+
             row.remove();
 
             updateOrderGrandTotal();
@@ -278,6 +364,10 @@ function addOrderItemRow(item = null) {
         }
     );
 
+
+    // ======================================
+    // Calculate Initial Row Total
+    // ======================================
 
     updateOrderItemRow.call(
         productSelect
@@ -297,12 +387,21 @@ function updateOrderItemRow() {
             ".order-item-row"
         );
 
-    if (!row) return;
+    if (!row) {
+
+        return;
+
+    }
 
 
     const productSelect =
         row.querySelector(
             ".order-item-product"
+        );
+
+    const weightInput =
+        row.querySelector(
+            ".order-item-weight"
         );
 
     const quantityInput =
@@ -318,11 +417,15 @@ function updateOrderItemRow() {
 
     const product =
         products.find(
-
             p =>
                 p.id ===
                 productSelect.value
+        );
 
+
+    const weightKg =
+        Number(
+            weightInput.value
         );
 
 
@@ -332,7 +435,11 @@ function updateOrderItemRow() {
         );
 
 
-    if (!product || quantity <= 0) {
+    if (
+        !product ||
+        weightKg <= 0 ||
+        quantity <= 0
+    ) {
 
         totalElement.textContent =
             "₹0.00";
@@ -344,8 +451,13 @@ function updateOrderItemRow() {
     }
 
 
+    // --------------------------------------
+    // Product price is per KG
+    // --------------------------------------
+
     const total =
         Number(product.price || 0) *
+        weightKg *
         quantity;
 
 
@@ -375,7 +487,10 @@ function updateOrderGrandTotal() {
         );
 
 
-    if (!container || !grandTotalElement) {
+    if (
+        !container ||
+        !grandTotalElement
+    ) {
 
         return;
 
@@ -398,6 +513,11 @@ function updateOrderGrandTotal() {
                 ".order-item-product"
             );
 
+        const weightInput =
+            row.querySelector(
+                ".order-item-weight"
+            );
+
         const quantityInput =
             row.querySelector(
                 ".order-item-quantity"
@@ -406,11 +526,15 @@ function updateOrderGrandTotal() {
 
         const product =
             products.find(
-
                 p =>
                     p.id ===
                     productSelect.value
+            );
 
+
+        const weightKg =
+            Number(
+                weightInput.value
             );
 
 
@@ -420,10 +544,15 @@ function updateOrderGrandTotal() {
             );
 
 
-        if (product && quantity > 0) {
+        if (
+            product &&
+            weightKg > 0 &&
+            quantity > 0
+        ) {
 
             grandTotal +=
                 Number(product.price || 0) *
+                weightKg *
                 quantity;
 
         }
@@ -447,7 +576,6 @@ function collectOrderItems() {
         document.getElementById(
             "orderItemsContainer"
         );
-
 
     if (!container) {
 
@@ -473,6 +601,14 @@ function collectOrderItems() {
             ).value;
 
 
+        const weightKg =
+            Number(
+                row.querySelector(
+                    ".order-item-weight"
+                ).value
+            );
+
+
         const quantity =
             Number(
                 row.querySelector(
@@ -481,11 +617,17 @@ function collectOrderItems() {
             );
 
 
-        if (productId && quantity > 0) {
+        if (
+            productId &&
+            weightKg > 0 &&
+            quantity > 0
+        ) {
 
             items.push({
 
                 productId,
+
+                weightKg,
 
                 quantity
 
@@ -512,8 +654,11 @@ function renderOrders(data) {
             "orderTable"
         );
 
+    if (!table) {
 
-    if (!table) return;
+        return;
+
+    }
 
 
     table.innerHTML = "";
@@ -562,12 +707,12 @@ function renderOrders(data) {
 
 
                 <td>
-                    ${order.productName}
+                    ${order.productName || "-"}
                 </td>
 
 
                 <td>
-                    ${order.quantity}
+                    ${order.quantity || 0}
                 </td>
 
 
@@ -686,9 +831,9 @@ async function openOrderModal(
     }
 
 
-    // --------------------------------------
+    // ======================================
     // Edit Existing Order
-    // --------------------------------------
+    // ======================================
 
     if (edit && order) {
 
@@ -696,41 +841,53 @@ async function openOrderModal(
             order.id;
 
 
-        document.getElementById(
-            "orderCustomer"
-        ).value =
-            order.customer;
+        const customerInput =
+            document.getElementById(
+                "orderCustomer"
+            );
+
+        if (customerInput) {
+
+            customerInput.value =
+                order.customer || "";
+
+        }
 
 
-        document.getElementById(
-            "orderStatus"
-        ).value =
-            order.status;
+        const statusInput =
+            document.getElementById(
+                "orderStatus"
+            );
+
+        if (statusInput) {
+
+            statusInput.value =
+                order.status || "Pending";
+
+        }
 
 
-        /*
-         * Existing orders currently contain
-         * one product in the orders table.
-         *
-         * We load that product into one row.
-         *
-         * Later we can make editing retrieve
-         * all order_items as well.
-         */
+        // Existing single-product order
 
         addOrderItemRow({
 
             productId:
                 order.productId,
 
+            weightKg:
+                order.weightKg || 1,
+
             quantity:
-                order.quantity
+                order.quantity || 1
 
         });
 
     }
 
+
     else {
+
+        // New order starts with one product
 
         addOrderItemRow();
 
@@ -740,10 +897,18 @@ async function openOrderModal(
     updateOrderGrandTotal();
 
 
-    document.getElementById(
-        "orderModal"
-    ).style.display =
-        "flex";
+    const modal =
+        document.getElementById(
+            "orderModal"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "flex";
+
+    }
 
 }
 
@@ -797,9 +962,9 @@ async function saveOrder() {
             collectOrderItems();
 
 
-        // --------------------------------------
-        // Validate
-        // --------------------------------------
+        // ======================================
+        // Validate Customer
+        // ======================================
 
         if (!customer) {
 
@@ -813,10 +978,14 @@ async function saveOrder() {
         }
 
 
+        // ======================================
+        // Validate Products
+        // ======================================
+
         if (items.length === 0) {
 
             Toast.show(
-                "Please add at least one product.",
+                "Please add at least one product with valid weight and quantity.",
                 "warning"
             );
 
@@ -825,9 +994,9 @@ async function saveOrder() {
         }
 
 
-        // --------------------------------------
-        // Check duplicate products
-        // --------------------------------------
+        // ======================================
+        // Check Duplicate Products
+        // ======================================
 
         const productIds =
             items.map(
@@ -838,10 +1007,8 @@ async function saveOrder() {
 
         const duplicateProducts =
             productIds.filter(
-
                 (id, index) =>
                     productIds.indexOf(id) !== index
-
             );
 
 
@@ -859,19 +1026,17 @@ async function saveOrder() {
         }
 
 
-        // --------------------------------------
-        // Validate stock locally
-        // --------------------------------------
+        // ======================================
+        // Validate Products
+        // ======================================
 
         for (const item of items) {
 
             const product =
                 products.find(
-
                     p =>
                         p.id ===
                         item.productId
-
                 );
 
 
@@ -887,17 +1052,18 @@ async function saveOrder() {
             }
 
 
+            // ----------------------------------
+            // Stock check
+            // ----------------------------------
+
             if (
                 Number(product.stock) <
                 Number(item.quantity)
             ) {
 
                 Toast.show(
-
                     `Insufficient stock for ${product.name}.`,
-
                     "error"
-
                 );
 
                 return;
@@ -907,9 +1073,9 @@ async function saveOrder() {
         }
 
 
-        // --------------------------------------
-        // Calculate total
-        // --------------------------------------
+        // ======================================
+        // Calculate Total
+        // ======================================
 
         let total = 0;
 
@@ -918,24 +1084,23 @@ async function saveOrder() {
 
             const product =
                 products.find(
-
                     p =>
                         p.id ===
                         item.productId
-
                 );
 
 
             total +=
                 Number(product.price || 0) *
+                Number(item.weightKg) *
                 Number(item.quantity);
 
         });
 
 
-        // --------------------------------------
+        // ======================================
         // Payload
-        // --------------------------------------
+        // ======================================
 
         const payload = {
 
@@ -953,28 +1118,21 @@ async function saveOrder() {
         let result;
 
 
-        // --------------------------------------
-        // Update existing order
-        // --------------------------------------
+        // ======================================
+        // Edit Existing Order
+        // ======================================
 
         if (editingOrderId) {
 
-            /*
-             * Current backend edit endpoint still
-             * supports one product.
-             *
-             * Therefore, for now, only allow one
-             * item when editing an old order.
-             */
+            // Current backend update endpoint
+            // supports the existing single-product
+            // edit flow.
 
             if (items.length !== 1) {
 
                 Toast.show(
-
-                    "Editing multiple-product orders will be added next. Create a new order for multiple products.",
-
+                    "Editing multiple-product orders is not available yet. Create a new order instead.",
                     "warning"
-
                 );
 
                 return;
@@ -998,6 +1156,9 @@ async function saveOrder() {
                         productId:
                             item.productId,
 
+                        weightKg:
+                            item.weightKg,
+
                         quantity:
                             item.quantity,
 
@@ -1011,9 +1172,10 @@ async function saveOrder() {
 
         }
 
-        // --------------------------------------
-        // Create new order
-        // --------------------------------------
+
+        // ======================================
+        // Create New Order
+        // ======================================
 
         else {
 
@@ -1029,18 +1191,16 @@ async function saveOrder() {
         }
 
 
-        // --------------------------------------
+        // ======================================
         // API Result
-        // --------------------------------------
+        // ======================================
 
         if (!result.success) {
 
             Toast.show(
-
-                result.message,
-
+                result.message ||
+                "Unable to save order.",
                 "error"
-
             );
 
             return;
@@ -1066,6 +1226,7 @@ async function saveOrder() {
 
     }
 
+
     catch (err) {
 
         console.error(
@@ -1075,11 +1236,9 @@ async function saveOrder() {
 
 
         Toast.show(
-
+            err.message ||
             "Unable to save order.",
-
             "error"
-
         );
 
     }
@@ -1095,21 +1254,16 @@ function editOrder(id) {
 
     const order =
         orders.find(
-
             o =>
                 o.id === id
-
         );
 
 
     if (!order) {
 
         Toast.show(
-
             "Order not found.",
-
             "error"
-
         );
 
         return;
@@ -1146,20 +1300,15 @@ async function deleteOrder(id) {
 
         const result =
             await ApiService.delete(
-
                 `/api/orders/${id}`
-
             );
 
 
         if (!result.success) {
 
             Toast.show(
-
                 result.message,
-
                 "error"
-
             );
 
             return;
@@ -1168,11 +1317,8 @@ async function deleteOrder(id) {
 
 
         Toast.show(
-
             "Order Deleted",
-
             "success"
-
         );
 
 
@@ -1180,16 +1326,18 @@ async function deleteOrder(id) {
 
     }
 
+
     catch (err) {
 
-        console.error(err);
+        console.error(
+            "Delete Order Error:",
+            err
+        );
+
 
         Toast.show(
-
             "Unable to delete order.",
-
             "error"
-
         );
 
     }
@@ -1202,9 +1350,7 @@ async function deleteOrder(id) {
 // ==========================================
 
 document.addEventListener(
-
     "click",
-
     function (e) {
 
         // --------------------------------------
@@ -1259,7 +1405,7 @@ document.addEventListener(
 
 
         // --------------------------------------
-        // Close Modal
+        // Close Order Modal
         // --------------------------------------
 
         if (
@@ -1346,7 +1492,6 @@ document.addEventListener(
         }
 
     }
-
 );
 
 
@@ -1362,13 +1507,11 @@ function initializeOrders() {
 
 
 // ==========================================
-// Close Modal on Outside Click
+// Close Modal Outside Click
 // ==========================================
 
 window.addEventListener(
-
     "click",
-
     function (e) {
 
         const orderModal =
@@ -1387,18 +1530,15 @@ window.addEventListener(
         }
 
     }
-
 );
 
 
 // ==========================================
-// ESC Key Support
+// ESC Key
 // ==========================================
 
 document.addEventListener(
-
     "keydown",
-
     function (e) {
 
         if (e.key === "Escape") {
@@ -1408,7 +1548,6 @@ document.addEventListener(
         }
 
     }
-
 );
 
 
@@ -1473,48 +1612,62 @@ function filterOrders() {
 
 
     const filtered =
-        allOrders.filter(order => {
+        allOrders.filter(
+            order => {
 
-            const orderId =
-                String(
-                    order.id || ""
-                ).toLowerCase();
-
-
-            const customer =
-                String(
-                    order.customer || ""
-                ).toLowerCase();
+                const orderId =
+                    String(
+                        order.id || ""
+                    ).toLowerCase();
 
 
-            const productName =
-                String(
-                    order.productName || ""
-                ).toLowerCase();
+                const customer =
+                    String(
+                        order.customer || ""
+                    ).toLowerCase();
 
 
-            const matchesSearch =
-
-                orderId.includes(keyword) ||
-
-                customer.includes(keyword) ||
-
-                productName.includes(keyword);
+                const productName =
+                    String(
+                        order.productName || ""
+                    ).toLowerCase();
 
 
-            const matchesStatus =
+                const matchesSearch =
 
-                status === "All" ||
+                    orderId.includes(
+                        keyword
+                    )
 
-                order.status === status;
+                    ||
+
+                    customer.includes(
+                        keyword
+                    )
+
+                    ||
+
+                    productName.includes(
+                        keyword
+                    );
 
 
-            return (
-                matchesSearch &&
-                matchesStatus
-            );
+                const matchesStatus =
 
-        });
+                    status === "All"
+
+                    ||
+
+                    order.status === status;
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus
+                );
+
+            }
+        );
 
 
     renderOrders(filtered);

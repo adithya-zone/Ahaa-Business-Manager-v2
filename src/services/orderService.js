@@ -52,44 +52,59 @@ class OrderService {
 
             }
 
-            const quantity =
-                Number(item.quantity);
+         const quantity =
+    Number(item.quantity);
 
-            if (!Number.isFinite(quantity) || quantity <= 0) {
+const weightKg =
+    Number(item.weightKg);
 
-                throw new Error(
-                    `Invalid quantity for ${product.name}.`
-                );
+if (!Number.isFinite(weightKg) || weightKg <= 0) {
 
-            }
+    throw new Error(
+        `Invalid weight for ${product.name}.`
+    );
 
-            if (Number(product.stock) < quantity) {
+}
 
-                throw new Error(
-                    `Insufficient stock for ${product.name}.`
-                );
+if (!Number.isFinite(quantity) || quantity <= 0) {
 
-            }
+    throw new Error(
+        `Invalid quantity for ${product.name}.`
+    );
 
-            const price =
-                Number(product.price) || 0;
+}
 
-            const total =
-                price * quantity;
+if (Number(product.stock) < quantity) {
 
-            orderItems.push({
+    throw new Error(
+        `Insufficient stock for ${product.name}.`
+    );
 
-                productId: product.id,
+}
 
-                productName: product.name,
+const price =
+    Number(product.price) || 0;
 
-                quantity,
+// Price is per KG
+const total =
+    price * weightKg * quantity;
 
-                price,
+orderItems.push({
 
-                total
+    productId: product.id,
 
-            });
+    productName: product.name,
+
+    weightKg,
+
+    quantity,
+
+    price,
+
+    total
+
+});   
+
 
         }
 
