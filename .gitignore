@@ -22,3 +22,6 @@ backups/
 
 # Optional
 *.tmp
+# Session Database
+
+database/sessions.sqlite
