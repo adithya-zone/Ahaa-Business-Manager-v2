@@ -2,49 +2,25 @@ const express = require("express");
 
 const router = express.Router();
 
-const controller =
-    require("../controllers/productController");
-
-const {
-    requireAuth
-} = require("../middleware/authMiddleware");
-
-
-// ==========================================
-// Authentication
-// ==========================================
-
-router.use(requireAuth);
-
+const controller = require("../controllers/productController");
 
 // ==========================================
 // Product Routes
 // ==========================================
 
-router.get(
-    "/",
-    controller.getProducts
-);
+// Get all products
+router.get("/", controller.getProducts);
 
-router.get(
-    "/:id",
-    controller.getProduct
-);
+// Get single product
+router.get("/:id", controller.getProduct);
 
-router.post(
-    "/",
-    controller.createProduct
-);
+// Create product
+router.post("/", controller.createProduct);
 
-router.put(
-    "/:id",
-    controller.updateProduct
-);
+// Update product
+router.put("/:id", controller.updateProduct);
 
-router.delete(
-    "/:id",
-    controller.deleteProduct
-);
-
+// Delete product
+router.delete("/:id", controller.deleteProduct);
 
 module.exports = router;
