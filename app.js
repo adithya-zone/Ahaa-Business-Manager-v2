@@ -15,11 +15,15 @@ const customerRoutes = require("./src/routes/customerRoutes");
 const settingsRoutes = require("./src/routes/settingsRoutes");
 const invoiceRoutes = require("./src/routes/invoiceRoutes");
 const reportRoutes = require("./src/routes/reportRoutes");
-
-// Authentication route will be added next
 const authRoutes = require("./src/routes/authRoutes");
 
 const app = express();
+
+// ==========================================
+// Trust Railway Reverse Proxy
+// ==========================================
+
+app.set("trust proxy", 1);
 
 // ==========================================
 // Middleware
@@ -32,7 +36,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ==========================================
-// Session
+// Session Configuration
 // ==========================================
 
 if (!process.env.SESSION_SECRET) {
@@ -47,19 +51,19 @@ app.use(
 
     session({
 
-store: new SQLiteStore({
+        store: new SQLiteStore({
 
-    db: "sessions.sqlite",
+            db: "sessions.sqlite",
 
-    dir:
-        process.env.SESSION_DB_DIR ||
-        (
-            process.env.NODE_ENV === "production"
-                ? "/data"
-                : path.join(__dirname, "database")
-        )
+            dir:
+                process.env.SESSION_DB_DIR ||
+                (
+                    process.env.NODE_ENV === "production"
+                        ? "/data"
+                        : path.join(__dirname, "database")
+                )
 
-}),
+        }),
 
         secret: process.env.SESSION_SECRET,
 
@@ -71,7 +75,8 @@ store: new SQLiteStore({
 
             httpOnly: true,
 
-            secure: process.env.NODE_ENV === "production",
+            secure:
+                process.env.NODE_ENV === "production",
 
             sameSite: "lax",
 

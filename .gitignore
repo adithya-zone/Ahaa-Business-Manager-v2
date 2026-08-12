@@ -25,3 +25,8 @@ backups/
 # Session Database
 
 database/sessions.sqlite
+
+# Database Files
+
+database/*.db
+database/*.sqlite

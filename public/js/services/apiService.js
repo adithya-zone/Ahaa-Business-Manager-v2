@@ -1,12 +1,31 @@
+// ==========================================
+// Ahaa Business Manager ERP v2
+// API Service
+// ==========================================
+
 class ApiService {
+
+    // ==========================================
+    // GET
+    // ==========================================
 
     static async get(url) {
 
-        const response = await fetch(url);
+        const response = await fetch(url, {
+
+            method: "GET",
+
+            credentials: "include"
+
+        });
 
         return await response.json();
 
     }
+
+    // ==========================================
+    // POST
+    // ==========================================
 
     static async post(url, data) {
 
@@ -14,8 +33,12 @@ class ApiService {
 
             method: "POST",
 
+            credentials: "include",
+
             headers: {
+
                 "Content-Type": "application/json"
+
             },
 
             body: JSON.stringify(data)
@@ -25,6 +48,10 @@ class ApiService {
         return await response.json();
 
     }
+
+    // ==========================================
+    // PUT
+    // ==========================================
 
     static async put(url, data) {
 
@@ -32,8 +59,12 @@ class ApiService {
 
             method: "PUT",
 
+            credentials: "include",
+
             headers: {
+
                 "Content-Type": "application/json"
+
             },
 
             body: JSON.stringify(data)
@@ -44,11 +75,17 @@ class ApiService {
 
     }
 
+    // ==========================================
+    // DELETE
+    // ==========================================
+
     static async delete(url) {
 
         const response = await fetch(url, {
 
-            method: "DELETE"
+            method: "DELETE",
+
+            credentials: "include"
 
         });
 
@@ -58,5 +95,5 @@ class ApiService {
 
 }
 
-// Make it available globally
+// Make available globally
 window.ApiService = ApiService;
