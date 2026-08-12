@@ -26,6 +26,7 @@ class InvoiceRepository extends BaseRepository {
 
     }
 
+
     // ======================================
     // Get Invoice Items
     // ======================================
@@ -39,7 +40,8 @@ class InvoiceRepository extends BaseRepository {
                 productName,
                 quantity,
                 price,
-                total
+                total,
+                weightKg
              FROM order_items
              WHERE orderId = ?
              ORDER BY id ASC`,
@@ -50,6 +52,7 @@ class InvoiceRepository extends BaseRepository {
 
     }
 
+
     // ======================================
     // Get Settings
     // ======================================
@@ -58,7 +61,9 @@ class InvoiceRepository extends BaseRepository {
 
         const rows = await this.all(
 
-            `SELECT key, value
+            `SELECT
+                key,
+                value
              FROM settings`
 
         );

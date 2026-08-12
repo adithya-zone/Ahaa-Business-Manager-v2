@@ -20,22 +20,27 @@ class InvoiceService {
 
         }
 
-        // Get new multi-product items
+
+        // ======================================
+        // Get Invoice Items
+        // ======================================
 
         let items =
             await invoiceRepository.getInvoiceItems(
                 orderId
             );
 
+
+        // ======================================
+        // Backward Compatibility
+        // ======================================
+
         /*
-         * Backward compatibility:
+         * Existing old orders may not have
+         * records inside order_items.
          *
-         * Existing orders were created before
-         * order_items existed.
-         *
-         * If no order_items are found, create
-         * one invoice item from the old order
-         * columns.
+         * Create one item from the old
+         * orders table when necessary.
          */
 
         if (!items || items.length === 0) {
@@ -71,7 +76,20 @@ class InvoiceService {
                             legacyOrder.productName,
 
                         quantity:
-                            legacyOrder.quantity,
+                            Number(
+                                legacyOrder.quantity
+                            ) || 1,
+
+                        /*
+                         * Old orders did not have
+                         * weight information.
+                         *
+                         * Use 1 KG as the legacy
+                         * default so old invoices
+                         * continue working.
+                         */
+
+                        weightKg: 1,
 
                         price:
                             Number(
@@ -91,6 +109,7 @@ class InvoiceService {
 
         }
 
+
         if (!items || items.length === 0) {
 
             throw new Error(
@@ -99,18 +118,39 @@ class InvoiceService {
 
         }
 
+
+        // ======================================
+        // Company Settings
+        // ======================================
+
         const settings =
             await invoiceRepository.getSettings();
+
+
+        // ======================================
+        // Calculate Subtotal
+        // ======================================
 
         const subtotal =
             items.reduce(
 
-                (sum, item) =>
-                    sum + Number(item.total || 0),
+                (sum, item) => {
+
+                    return (
+                        sum +
+                        Number(item.total || 0)
+                    );
+
+                },
 
                 0
 
             );
+
+
+        // ======================================
+        // Prepare Invoice
+        // ======================================
 
         return {
 
@@ -132,6 +172,7 @@ class InvoiceService {
                 invoice.paymentMethod,
 
             items:
+
                 items.map(item => ({
 
                     productId:
@@ -140,21 +181,31 @@ class InvoiceService {
                     product:
                         item.productName,
 
+                    weightKg:
+                        Number(
+                            item.weightKg || 0
+                        ),
+
                     quantity:
-                        Number(item.quantity),
+                        Number(
+                            item.quantity || 0
+                        ),
 
                     price:
-                        Number(item.price || 0),
+                        Number(
+                            item.price || 0
+                        ),
 
                     total:
-                        Number(item.total || 0)
+                        Number(
+                            item.total || 0
+                        )
 
                 })),
 
             subtotal,
 
-            gst:
-                0,
+            gst: 0,
 
             grandTotal:
                 subtotal,

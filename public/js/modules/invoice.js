@@ -4,6 +4,7 @@
 
 let currentInvoice = null;
 
+
 // ==========================================
 // Open Invoice
 // ==========================================
@@ -12,14 +13,16 @@ async function openInvoice(orderId) {
 
     try {
 
-        const result = await ApiService.get(
-            `/api/invoice/${orderId}`
-        );
+        const result =
+            await ApiService.get(
+                `/api/invoice/${orderId}`
+            );
+
 
         if (!result.success) {
 
             Toast.show(
-                result.message || "Unable to load invoice.",
+                result.message,
                 "error"
             );
 
@@ -27,24 +30,28 @@ async function openInvoice(orderId) {
 
         }
 
+
         currentInvoice = result.data;
 
-        renderInvoice(currentInvoice);
 
-        const modal =
-            document.getElementById("invoiceModal");
+        renderInvoice(
+            currentInvoice
+        );
 
-        if (modal) {
 
-            modal.style.display = "flex";
-
-        }
+        document.getElementById(
+            "invoiceModal"
+        ).style.display = "flex";
 
     }
 
     catch (err) {
 
-        console.error("Invoice Error:", err);
+        console.error(
+            "Invoice Error:",
+            err
+        );
+
 
         Toast.show(
             "Unable to load invoice.",
@@ -55,83 +62,85 @@ async function openInvoice(orderId) {
 
 }
 
+
 // ==========================================
 // Render Invoice
 // ==========================================
 
 function renderInvoice(invoice) {
 
-    // --------------------------------------
+    // ======================================
     // Company Details
-    // --------------------------------------
+    // ======================================
 
     document.getElementById(
         "invoiceCompanyName"
     ).textContent =
-        invoice.companyName || "AHAA BUSINESS MANAGER";
+        invoice.companyName;
+
 
     document.getElementById(
         "invoiceCompanyAddress"
     ).textContent =
-        invoice.companyAddress || "";
+        invoice.companyAddress;
+
 
     document.getElementById(
         "invoiceCompanyPhone"
     ).textContent =
-        invoice.companyPhone || "";
+        invoice.companyPhone;
+
 
     document.getElementById(
         "invoiceCompanyEmail"
     ).textContent =
-        invoice.companyEmail || "";
+        invoice.companyEmail;
 
-    // --------------------------------------
-    // Invoice Details
-    // --------------------------------------
+
+    // ======================================
+    // Invoice Information
+    // ======================================
 
     document.getElementById(
         "invoiceNumber"
     ).textContent =
-        invoice.invoiceNo || "";
+        invoice.invoiceNo;
+
 
     document.getElementById(
         "invoiceDate"
     ).textContent =
-        invoice.date || "";
+        invoice.date;
+
 
     document.getElementById(
         "invoiceCustomer"
     ).textContent =
-        invoice.customer || "Walk-in Customer";
+        invoice.customer;
+
 
     document.getElementById(
         "invoiceStatus"
     ).textContent =
         invoice.status || "Pending";
 
-    // --------------------------------------
+
+    // ======================================
     // Products
-    // --------------------------------------
+    // ======================================
 
     const tbody =
-        document.getElementById("invoiceItems");
-
-    if (!tbody) {
-
-        console.error(
-            "Invoice items table body not found."
+        document.getElementById(
+            "invoiceItemsBody"
         );
 
-        return;
-
-    }
 
     tbody.innerHTML = "";
 
+
     const items =
-        Array.isArray(invoice.items)
-            ? invoice.items
-            : [];
+        invoice.items || [];
+
 
     if (items.length === 0) {
 
@@ -140,10 +149,14 @@ function renderInvoice(invoice) {
             <tr>
 
                 <td
-                    colspan="4"
-                    style="text-align:center;padding:20px;">
+                    colspan="5"
+                    style="
+                        text-align:center;
+                        padding:15px;
+                    "
+                >
 
-                    No products found.
+                    No products found
 
                 </td>
 
@@ -153,79 +166,132 @@ function renderInvoice(invoice) {
 
     }
 
-    else {
 
-        items.forEach((item, index) => {
+    // ======================================
+    // Render Every Product
+    // ======================================
 
-            const quantity =
-                Number(item.quantity) || 0;
+    items.forEach((item, index) => {
 
-            const price =
-                Number(item.price) || 0;
+        const product =
+            item.product || "Unknown Product";
 
-            const total =
-                Number(item.total) ||
-                quantity * price;
 
-            const row =
-                document.createElement("tr");
+        const weight =
+            Number(
+                item.weightKg || 0
+            );
 
-            row.innerHTML = `
 
-                <td>
-                    ${index + 1}.
-                    ${item.product || "Product"}
-                </td>
+        const quantity =
+            Number(
+                item.quantity || 0
+            );
 
-                <td>
-                    ${quantity}
-                </td>
 
-                <td>
-                    ₹${price.toFixed(2)}
-                </td>
+        const price =
+            Number(
+                item.price || 0
+            );
 
-                <td>
-                    ₹${total.toFixed(2)}
-                </td>
 
-            `;
+        const total =
+            Number(
+                item.total || 0
+            );
 
-            tbody.appendChild(row);
 
-        });
+        const row =
+            document.createElement("tr");
 
-    }
 
-    // --------------------------------------
+        row.innerHTML = `
+
+            <td>
+
+                ${index + 1}.
+                ${product}
+
+            </td>
+
+
+            <td>
+
+                ${weight.toFixed(3)} KG
+
+            </td>
+
+
+            <td>
+
+                ${quantity}
+
+            </td>
+
+
+            <td>
+
+                ₹${price.toFixed(2)}
+
+            </td>
+
+
+            <td>
+
+                ₹${total.toFixed(2)}
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(row);
+
+    });
+
+
+    // ======================================
     // Totals
-    // --------------------------------------
+    // ======================================
 
     const subtotal =
-        Number(invoice.subtotal) || 0;
+        Number(
+            invoice.subtotal || 0
+        );
+
 
     const gst =
-        Number(invoice.gst) || 0;
+        Number(
+            invoice.gst || 0
+        );
+
 
     const grandTotal =
-        Number(invoice.grandTotal) || subtotal;
+        Number(
+            invoice.grandTotal ||
+            subtotal + gst
+        );
+
 
     document.getElementById(
         "invoiceTotalAmount"
     ).textContent =
-        `₹${subtotal.toFixed(2)}`;
+        "₹" + subtotal.toFixed(2);
+
 
     document.getElementById(
-        "invoiceGST"
+        "invoiceGst"
     ).textContent =
-        `₹${gst.toFixed(2)}`;
+        "₹" + gst.toFixed(2);
+
 
     document.getElementById(
         "invoiceGrandTotal"
     ).textContent =
-        `₹${grandTotal.toFixed(2)}`;
+        "₹" + grandTotal.toFixed(2);
 
 }
+
 
 // ==========================================
 // Close Invoice
@@ -233,16 +299,12 @@ function renderInvoice(invoice) {
 
 function closeInvoice() {
 
-    const modal =
-        document.getElementById("invoiceModal");
-
-    if (modal) {
-
-        modal.style.display = "none";
-
-    }
+    document.getElementById(
+        "invoiceModal"
+    ).style.display = "none";
 
 }
+
 
 // ==========================================
 // Print Invoice
@@ -250,21 +312,11 @@ function closeInvoice() {
 
 function printInvoice() {
 
-    if (!currentInvoice) {
-
-        Toast.show(
-            "No invoice loaded.",
-            "error"
-        );
-
-        return;
-
-    }
-
     const content =
         document.getElementById(
             "invoiceContent"
         ).innerHTML;
+
 
     const win =
         window.open(
@@ -273,16 +325,6 @@ function printInvoice() {
             "width=900,height=700"
         );
 
-    if (!win) {
-
-        Toast.show(
-            "Please allow popups to print the invoice.",
-            "warning"
-        );
-
-        return;
-
-    }
 
     win.document.write(`
 
@@ -290,92 +332,79 @@ function printInvoice() {
 
         <head>
 
-            <title>
-                Invoice-${currentInvoice.invoiceNo}
-            </title>
+            <title>Invoice</title>
 
             <style>
 
                 body {
 
                     font-family:
+                        Poppins,
                         Arial,
                         sans-serif;
 
-                    padding: 30px;
+                    padding:30px;
 
-                    color: #222;
+                    color:#222;
 
                 }
+
 
                 table {
 
-                    width: 100%;
+                    width:100%;
 
-                    border-collapse: collapse;
+                    border-collapse:
+                        collapse;
 
-                    margin-top: 20px;
+                    margin-top:20px;
 
                 }
+
 
                 table,
                 th,
                 td {
 
-                    border: 1px solid #ddd;
+                    border:
+                        1px solid #ddd;
 
                 }
+
 
                 th,
                 td {
 
-                    padding: 10px;
+                    padding:10px;
 
-                    text-align: left;
-
-                }
-
-                th {
-
-                    background: #f5f5f5;
+                    text-align:left;
 
                 }
 
-                .invoice-company {
 
-                    text-align: center;
+                .invoice-header {
 
-                    margin-bottom: 20px;
+                    text-align:center;
 
-                }
-
-                .invoice-company h1 {
-
-                    margin-bottom: 5px;
+                    margin-bottom:25px;
 
                 }
+
 
                 .invoice-footer {
 
-                    margin-top: 40px;
+                    margin-top:40px;
 
-                    text-align: center;
+                    text-align:center;
 
-                    color: #666;
-
-                }
-
-                .grand-total {
-
-                    font-weight: bold;
-
-                    font-size: 18px;
+                    color:#666;
 
                 }
 
             </style>
 
         </head>
+
 
         <body>
 
@@ -387,6 +416,7 @@ function printInvoice() {
 
     `);
 
+
     win.document.close();
 
     win.focus();
@@ -395,16 +425,23 @@ function printInvoice() {
 
 }
 
+
 // ==========================================
 // Download PDF
 // ==========================================
 
 function downloadInvoice() {
 
+    const element =
+        document.getElementById(
+            "invoiceContent"
+        );
+
+
     if (!currentInvoice) {
 
         Toast.show(
-            "No invoice loaded.",
+            "Invoice data not available.",
             "error"
         );
 
@@ -412,10 +449,6 @@ function downloadInvoice() {
 
     }
 
-    const element =
-        document.getElementById(
-            "invoiceContent"
-        );
 
     html2pdf()
 
@@ -458,6 +491,7 @@ function downloadInvoice() {
 
 }
 
+
 // ==========================================
 // Event Binding
 // ==========================================
@@ -466,10 +500,15 @@ document.addEventListener(
     "click",
     function (e) {
 
-        // Invoice button
+        // -----------------------------
+        // Invoice Button
+        // -----------------------------
 
         const invoiceBtn =
-            e.target.closest(".invoice-btn");
+            e.target.closest(
+                ".invoice-btn"
+            );
+
 
         if (invoiceBtn) {
 
@@ -481,12 +520,17 @@ document.addEventListener(
 
         }
 
-        // Close
+
+        // -----------------------------
+        // Close Invoice
+        // -----------------------------
 
         if (
+
             e.target.closest(
                 "#closeInvoiceModal"
             )
+
         ) {
 
             closeInvoice();
@@ -495,12 +539,17 @@ document.addEventListener(
 
         }
 
+
+        // -----------------------------
         // Print
+        // -----------------------------
 
         if (
+
             e.target.closest(
                 "#printInvoiceBtn"
             )
+
         ) {
 
             printInvoice();
@@ -509,12 +558,17 @@ document.addEventListener(
 
         }
 
+
+        // -----------------------------
         // Download PDF
+        // -----------------------------
 
         if (
+
             e.target.closest(
                 "#downloadInvoiceBtn"
             )
+
         ) {
 
             downloadInvoice();
@@ -526,8 +580,9 @@ document.addEventListener(
     }
 );
 
+
 // ==========================================
-// ESC Key
+// ESC Key Support
 // ==========================================
 
 document.addEventListener(
@@ -543,6 +598,7 @@ document.addEventListener(
     }
 );
 
+
 // ==========================================
 // Click Outside Modal
 // ==========================================
@@ -556,9 +612,12 @@ window.addEventListener(
                 "invoiceModal"
             );
 
+
         if (
+
             modal &&
             e.target === modal
+
         ) {
 
             closeInvoice();
@@ -567,6 +626,7 @@ window.addEventListener(
 
     }
 );
+
 
 console.log(
     "✅ Invoice Module Loaded"
