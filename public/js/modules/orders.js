@@ -10,6 +10,7 @@ let editingOrderId = null;
 
 let allOrders = [];
 
+
 // ==========================================
 // Load Orders
 // ==========================================
@@ -18,16 +19,14 @@ async function loadOrders() {
 
     try {
 
-        const result = await ApiService.get("/api/orders");
+        const result =
+            await ApiService.get("/api/orders");
 
         if (!result.success) {
 
             Toast.show(
-
                 result.message,
-
                 "error"
-
             );
 
             return;
@@ -47,16 +46,14 @@ async function loadOrders() {
         console.error(err);
 
         Toast.show(
-
             "Unable to load orders.",
-
             "error"
-
         );
 
     }
 
 }
+
 
 // ==========================================
 // Load Products
@@ -66,41 +63,21 @@ async function loadOrderProducts() {
 
     try {
 
-        const result = await ApiService.get(
+        const result =
+            await ApiService.get("/api/products");
 
-            "/api/products"
+        if (!result.success) {
 
-        );
+            Toast.show(
+                result.message || "Unable to load products.",
+                "error"
+            );
 
-        if (!result.success) return;
+            return;
+
+        }
 
         products = result.data || [];
-
-        const select = document.getElementById(
-
-            "orderProduct"
-
-        );
-
-        if (!select) return;
-
-        select.innerHTML =
-
-            '<option value="">Select Product</option>';
-
-        products.forEach(product => {
-
-            select.innerHTML += `
-
-                <option value="${product.id}">
-
-                    ${product.name}
-
-                </option>
-
-            `;
-
-        });
 
     }
 
@@ -108,9 +85,421 @@ async function loadOrderProducts() {
 
         console.error(err);
 
+        Toast.show(
+            "Unable to load products.",
+            "error"
+        );
+
     }
 
 }
+
+
+// ==========================================
+// Create Product Options
+// ==========================================
+
+function getProductOptions(selectedId = "") {
+
+    let html = `
+        <option value="">
+            Select Product
+        </option>
+    `;
+
+    products.forEach(product => {
+
+        const selected =
+            product.id === selectedId
+                ? "selected"
+                : "";
+
+        html += `
+            <option
+                value="${product.id}"
+                ${selected}>
+
+                ${product.name}
+
+            </option>
+        `;
+
+    });
+
+    return html;
+
+}
+
+
+// ==========================================
+// Add Product Row
+// ==========================================
+
+function addOrderItemRow(item = null) {
+
+    const container =
+        document.getElementById(
+            "orderItemsContainer"
+        );
+
+    if (!container) return;
+
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "order-item-row";
+
+    row.style.cssText = `
+        display:grid;
+        grid-template-columns:
+            minmax(180px, 2fr)
+            90px
+            110px
+            40px;
+        gap:10px;
+        align-items:center;
+        margin-bottom:10px;
+    `;
+
+
+    const selectedProduct =
+        item?.productId || "";
+
+
+    const quantity =
+        item?.quantity || 1;
+
+
+    row.innerHTML = `
+
+        <select
+            class="order-item-product"
+            required>
+
+            ${getProductOptions(
+                selectedProduct
+            )}
+
+        </select>
+
+
+        <input
+            type="number"
+            class="order-item-quantity"
+            min="1"
+            value="${quantity}"
+            required>
+
+
+        <div
+            class="order-item-total"
+            style="
+                text-align:right;
+                font-weight:600;
+            ">
+
+            ₹0.00
+
+        </div>
+
+
+        <button
+            type="button"
+            class="btn-danger remove-order-item"
+            title="Remove Product">
+
+            <i class="fa-solid fa-trash"></i>
+
+        </button>
+
+    `;
+
+
+    container.appendChild(row);
+
+
+    const productSelect =
+        row.querySelector(
+            ".order-item-product"
+        );
+
+    const quantityInput =
+        row.querySelector(
+            ".order-item-quantity"
+        );
+
+
+    productSelect.addEventListener(
+        "change",
+        updateOrderItemRow
+    );
+
+
+    quantityInput.addEventListener(
+        "input",
+        updateOrderItemRow
+    );
+
+
+    const removeButton =
+        row.querySelector(
+            ".remove-order-item"
+        );
+
+
+    removeButton.addEventListener(
+        "click",
+        function () {
+
+            const rows =
+                container.querySelectorAll(
+                    ".order-item-row"
+                );
+
+            // Keep at least one row
+
+            if (rows.length <= 1) {
+
+                Toast.show(
+                    "At least one product is required.",
+                    "warning"
+                );
+
+                return;
+
+            }
+
+            row.remove();
+
+            updateOrderGrandTotal();
+
+        }
+    );
+
+
+    updateOrderItemRow.call(
+        productSelect
+    );
+
+}
+
+
+// ==========================================
+// Update Product Row
+// ==========================================
+
+function updateOrderItemRow() {
+
+    const row =
+        this.closest(
+            ".order-item-row"
+        );
+
+    if (!row) return;
+
+
+    const productSelect =
+        row.querySelector(
+            ".order-item-product"
+        );
+
+    const quantityInput =
+        row.querySelector(
+            ".order-item-quantity"
+        );
+
+    const totalElement =
+        row.querySelector(
+            ".order-item-total"
+        );
+
+
+    const product =
+        products.find(
+
+            p =>
+                p.id ===
+                productSelect.value
+
+        );
+
+
+    const quantity =
+        Number(
+            quantityInput.value
+        );
+
+
+    if (!product || quantity <= 0) {
+
+        totalElement.textContent =
+            "₹0.00";
+
+        updateOrderGrandTotal();
+
+        return;
+
+    }
+
+
+    const total =
+        Number(product.price || 0) *
+        quantity;
+
+
+    totalElement.textContent =
+        "₹" + total.toFixed(2);
+
+
+    updateOrderGrandTotal();
+
+}
+
+
+// ==========================================
+// Update Grand Total
+// ==========================================
+
+function updateOrderGrandTotal() {
+
+    const container =
+        document.getElementById(
+            "orderItemsContainer"
+        );
+
+    const grandTotalElement =
+        document.getElementById(
+            "orderGrandTotal"
+        );
+
+
+    if (!container || !grandTotalElement) {
+
+        return;
+
+    }
+
+
+    let grandTotal = 0;
+
+
+    const rows =
+        container.querySelectorAll(
+            ".order-item-row"
+        );
+
+
+    rows.forEach(row => {
+
+        const productSelect =
+            row.querySelector(
+                ".order-item-product"
+            );
+
+        const quantityInput =
+            row.querySelector(
+                ".order-item-quantity"
+            );
+
+
+        const product =
+            products.find(
+
+                p =>
+                    p.id ===
+                    productSelect.value
+
+            );
+
+
+        const quantity =
+            Number(
+                quantityInput.value
+            );
+
+
+        if (product && quantity > 0) {
+
+            grandTotal +=
+                Number(product.price || 0) *
+                quantity;
+
+        }
+
+    });
+
+
+    grandTotalElement.textContent =
+        "₹" + grandTotal.toFixed(2);
+
+}
+
+
+// ==========================================
+// Collect Order Items
+// ==========================================
+
+function collectOrderItems() {
+
+    const container =
+        document.getElementById(
+            "orderItemsContainer"
+        );
+
+
+    if (!container) {
+
+        return [];
+
+    }
+
+
+    const rows =
+        container.querySelectorAll(
+            ".order-item-row"
+        );
+
+
+    const items = [];
+
+
+    rows.forEach(row => {
+
+        const productId =
+            row.querySelector(
+                ".order-item-product"
+            ).value;
+
+
+        const quantity =
+            Number(
+                row.querySelector(
+                    ".order-item-quantity"
+                ).value
+            );
+
+
+        if (productId && quantity > 0) {
+
+            items.push({
+
+                productId,
+
+                quantity
+
+            });
+
+        }
+
+    });
+
+
+    return items;
+
+}
+
 
 // ==========================================
 // Render Orders
@@ -118,15 +507,17 @@ async function loadOrderProducts() {
 
 function renderOrders(data) {
 
-    const table = document.getElementById(
+    const table =
+        document.getElementById(
+            "orderTable"
+        );
 
-        "orderTable"
-
-    );
 
     if (!table) return;
 
+
     table.innerHTML = "";
+
 
     if (data.length === 0) {
 
@@ -134,9 +525,12 @@ function renderOrders(data) {
 
             <tr>
 
-                <td colspan="8"
-
-                    style="text-align:center;padding:30px;">
+                <td
+                    colspan="8"
+                    style="
+                        text-align:center;
+                        padding:30px;
+                    ">
 
                     No orders available
 
@@ -150,121 +544,209 @@ function renderOrders(data) {
 
     }
 
+
     data.forEach(order => {
 
         table.innerHTML += `
 
-        <tr>
+            <tr>
 
-            <td>${order.id}</td>
+                <td>
+                    ${order.id}
+                </td>
 
-            <td>${order.customer}</td>
 
-            <td>${order.productName}</td>
+                <td>
+                    ${order.customer}
+                </td>
 
-            <td>${order.quantity}</td>
 
-            <td>₹${order.total}</td>
+                <td>
+                    ${order.productName}
+                </td>
 
-            <td>
 
-                <span class="order-status">
+                <td>
+                    ${order.quantity}
+                </td>
 
-                    ${order.status}
 
-                </span>
+                <td>
+                    ₹${Number(
+                        order.total || 0
+                    ).toFixed(2)}
+                </td>
 
-            </td>
 
-            <td>
+                <td>
 
-                ${new Date(order.createdAt)
+                    <span class="order-status">
 
-                    .toLocaleDateString()}
+                        ${order.status}
 
-            </td>
+                    </span>
 
-            <td>
+                </td>
 
-                <div class="order-actions">
 
-                    <button
+                <td>
 
-                        class="btn-primary invoice-btn"
+                    ${new Date(
+                        order.createdAt
+                    ).toLocaleDateString()}
 
-                        data-id="${order.id}">
+                </td>
 
-                        <i class="fa-solid fa-file-invoice"></i>
 
-                        Invoice
+                <td>
 
-                    </button>
+                    <div class="order-actions">
 
-                    <button
+                        <button
+                            class="btn-primary invoice-btn"
+                            data-id="${order.id}">
 
-                        class="btn-primary edit-order-btn"
+                            <i
+                                class="fa-solid fa-file-invoice">
+                            </i>
 
-                        data-id="${order.id}">
+                            Invoice
 
-                        Edit
+                        </button>
 
-                    </button>
 
-                    <button
+                        <button
+                            class="btn-primary edit-order-btn"
+                            data-id="${order.id}">
 
-                        class="btn-danger delete-order-btn"
+                            Edit
 
-                        data-id="${order.id}">
+                        </button>
 
-                        Delete
 
-                    </button>
+                        <button
+                            class="btn-danger delete-order-btn"
+                            data-id="${order.id}">
 
-                </div>
+                            Delete
 
-            </td>
+                        </button>
 
-        </tr>
+                    </div>
+
+                </td>
+
+            </tr>
 
         `;
 
     });
 
 }
+
+
 // ==========================================
 // Open Order Modal
 // ==========================================
 
-async function openOrderModal(edit = false, order = null) {
+async function openOrderModal(
+    edit = false,
+    order = null
+) {
 
     editingOrderId = null;
 
+
     await loadOrderProducts();
 
-    document.getElementById("orderForm").reset();
 
-    if (edit && order) {
+    const form =
+        document.getElementById(
+            "orderForm"
+        );
 
-        editingOrderId = order.id;
 
-        document.getElementById("orderCustomer").value =
-            order.customer;
+    if (form) {
 
-        document.getElementById("orderProduct").value =
-            order.productId;
-
-        document.getElementById("orderQuantity").value =
-            order.quantity;
-
-        document.getElementById("orderStatus").value =
-            order.status;
+        form.reset();
 
     }
 
-    document.getElementById("orderModal").style.display =
+
+    const container =
+        document.getElementById(
+            "orderItemsContainer"
+        );
+
+
+    if (container) {
+
+        container.innerHTML = "";
+
+    }
+
+
+    // --------------------------------------
+    // Edit Existing Order
+    // --------------------------------------
+
+    if (edit && order) {
+
+        editingOrderId =
+            order.id;
+
+
+        document.getElementById(
+            "orderCustomer"
+        ).value =
+            order.customer;
+
+
+        document.getElementById(
+            "orderStatus"
+        ).value =
+            order.status;
+
+
+        /*
+         * Existing orders currently contain
+         * one product in the orders table.
+         *
+         * We load that product into one row.
+         *
+         * Later we can make editing retrieve
+         * all order_items as well.
+         */
+
+        addOrderItemRow({
+
+            productId:
+                order.productId,
+
+            quantity:
+                order.quantity
+
+        });
+
+    }
+
+    else {
+
+        addOrderItemRow();
+
+    }
+
+
+    updateOrderGrandTotal();
+
+
+    document.getElementById(
+        "orderModal"
+    ).style.display =
         "flex";
 
 }
+
 
 // ==========================================
 // Close Order Modal
@@ -274,10 +756,22 @@ function closeOrderModal() {
 
     editingOrderId = null;
 
-    document.getElementById("orderModal").style.display =
-        "none";
+
+    const modal =
+        document.getElementById(
+            "orderModal"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "none";
+
+    }
 
 }
+
 
 // ==========================================
 // Save Order
@@ -287,23 +781,30 @@ async function saveOrder() {
 
     try {
 
-        const productId =
-            document.getElementById("orderProduct").value;
-
-        const quantity = Number(
-            document.getElementById("orderQuantity").value
-        );
-
         const customer =
-            document.getElementById("orderCustomer").value;
+            document.getElementById(
+                "orderCustomer"
+            ).value.trim();
+
 
         const status =
-            document.getElementById("orderStatus").value;
+            document.getElementById(
+                "orderStatus"
+            ).value;
 
-        if (!productId || quantity <= 0) {
+
+        const items =
+            collectOrderItems();
+
+
+        // --------------------------------------
+        // Validate
+        // --------------------------------------
+
+        if (!customer) {
 
             Toast.show(
-                "Please complete the form.",
+                "Please enter customer name.",
                 "warning"
             );
 
@@ -311,85 +812,255 @@ async function saveOrder() {
 
         }
 
-        const product = products.find(
 
-            p => p.id === productId
-
-        );
-
-        if (!product) {
+        if (items.length === 0) {
 
             Toast.show(
-                "Product not found.",
-                "error"
+                "Please add at least one product.",
+                "warning"
             );
 
             return;
 
         }
+
+
+        // --------------------------------------
+        // Check duplicate products
+        // --------------------------------------
+
+        const productIds =
+            items.map(
+                item =>
+                    item.productId
+            );
+
+
+        const duplicateProducts =
+            productIds.filter(
+
+                (id, index) =>
+                    productIds.indexOf(id) !== index
+
+            );
+
+
+        if (
+            duplicateProducts.length > 0
+        ) {
+
+            Toast.show(
+                "Please add each product only once.",
+                "warning"
+            );
+
+            return;
+
+        }
+
+
+        // --------------------------------------
+        // Validate stock locally
+        // --------------------------------------
+
+        for (const item of items) {
+
+            const product =
+                products.find(
+
+                    p =>
+                        p.id ===
+                        item.productId
+
+                );
+
+
+            if (!product) {
+
+                Toast.show(
+                    "Product not found.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                Number(product.stock) <
+                Number(item.quantity)
+            ) {
+
+                Toast.show(
+
+                    `Insufficient stock for ${product.name}.`,
+
+                    "error"
+
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        // --------------------------------------
+        // Calculate total
+        // --------------------------------------
+
+        let total = 0;
+
+
+        items.forEach(item => {
+
+            const product =
+                products.find(
+
+                    p =>
+                        p.id ===
+                        item.productId
+
+                );
+
+
+            total +=
+                Number(product.price || 0) *
+                Number(item.quantity);
+
+        });
+
+
+        // --------------------------------------
+        // Payload
+        // --------------------------------------
 
         const payload = {
 
             customer,
 
-            productId,
+            items,
 
-            quantity,
-
-            total: quantity * Number(product.price),
+            total,
 
             status
 
         };
 
+
         let result;
+
+
+        // --------------------------------------
+        // Update existing order
+        // --------------------------------------
 
         if (editingOrderId) {
 
-            result = await ApiService.put(
+            /*
+             * Current backend edit endpoint still
+             * supports one product.
+             *
+             * Therefore, for now, only allow one
+             * item when editing an old order.
+             */
 
-                `/api/orders/${editingOrderId}`,
+            if (items.length !== 1) {
 
-                payload
+                Toast.show(
 
-            );
+                    "Editing multiple-product orders will be added next. Create a new order for multiple products.",
 
-        } else {
+                    "warning"
 
-            result = await ApiService.post(
+                );
 
-                "/api/orders",
+                return;
 
-                payload
+            }
 
-            );
+
+            const item =
+                items[0];
+
+
+            result =
+                await ApiService.put(
+
+                    `/api/orders/${editingOrderId}`,
+
+                    {
+
+                        customer,
+
+                        productId:
+                            item.productId,
+
+                        quantity:
+                            item.quantity,
+
+                        total,
+
+                        status
+
+                    }
+
+                );
 
         }
+
+        // --------------------------------------
+        // Create new order
+        // --------------------------------------
+
+        else {
+
+            result =
+                await ApiService.post(
+
+                    "/api/orders",
+
+                    payload
+
+                );
+
+        }
+
+
+        // --------------------------------------
+        // API Result
+        // --------------------------------------
 
         if (!result.success) {
 
             Toast.show(
+
                 result.message,
+
                 "error"
+
             );
 
             return;
 
         }
 
+
         Toast.show(
 
             editingOrderId
-
                 ? "Order Updated"
-
                 : "Order Created",
 
             "success"
 
         );
 
+
         closeOrderModal();
+
 
         await loadOrders();
 
@@ -397,27 +1068,39 @@ async function saveOrder() {
 
     catch (err) {
 
-        console.error(err);
+        console.error(
+            "Save Order Error:",
+            err
+        );
+
 
         Toast.show(
+
             "Unable to save order.",
+
             "error"
+
         );
 
     }
 
 }
+
+
 // ==========================================
 // Edit Order
 // ==========================================
 
 function editOrder(id) {
 
-    const order = orders.find(
+    const order =
+        orders.find(
 
-        o => o.id === id
+            o =>
+                o.id === id
 
-    );
+        );
+
 
     if (!order) {
 
@@ -433,15 +1116,14 @@ function editOrder(id) {
 
     }
 
+
     openOrderModal(
-
         true,
-
         order
-
     );
 
 }
+
 
 // ==========================================
 // Delete Order
@@ -450,26 +1132,25 @@ function editOrder(id) {
 async function deleteOrder(id) {
 
     if (
-
         !confirm(
-
             "Delete this order?"
-
         )
-
     ) {
 
         return;
 
     }
 
+
     try {
 
-        const result = await ApiService.delete(
+        const result =
+            await ApiService.delete(
 
-            `/api/orders/${id}`
+                `/api/orders/${id}`
 
-        );
+            );
+
 
         if (!result.success) {
 
@@ -485,6 +1166,7 @@ async function deleteOrder(id) {
 
         }
 
+
         Toast.show(
 
             "Order Deleted",
@@ -493,7 +1175,8 @@ async function deleteOrder(id) {
 
         );
 
-        loadOrders();
+
+        await loadOrders();
 
     }
 
@@ -513,6 +1196,7 @@ async function deleteOrder(id) {
 
 }
 
+
 // ==========================================
 // Event Binding
 // ==========================================
@@ -523,18 +1207,14 @@ document.addEventListener(
 
     function (e) {
 
-        // -----------------------------
+        // --------------------------------------
         // Create Order
-        // -----------------------------
+        // --------------------------------------
 
         if (
-
             e.target.closest(
-
                 "#addOrderBtn"
-
             )
-
         ) {
 
             openOrderModal();
@@ -543,18 +1223,32 @@ document.addEventListener(
 
         }
 
-        // -----------------------------
-        // Save Order
-        // -----------------------------
+
+        // --------------------------------------
+        // Add Product
+        // --------------------------------------
 
         if (
-
             e.target.closest(
-
-                "#saveOrderBtn"
-
+                "#addOrderItemBtn"
             )
+        ) {
 
+            addOrderItemRow();
+
+            return;
+
+        }
+
+
+        // --------------------------------------
+        // Save Order
+        // --------------------------------------
+
+        if (
+            e.target.closest(
+                "#saveOrderBtn"
+            )
         ) {
 
             saveOrder();
@@ -563,24 +1257,21 @@ document.addEventListener(
 
         }
 
-        // -----------------------------
+
+        // --------------------------------------
         // Close Modal
-        // -----------------------------
+        // --------------------------------------
 
         if (
 
             e.target.closest(
-
                 "#closeOrderModal"
-
             )
 
             ||
 
             e.target.closest(
-
                 "#cancelOrderBtn"
-
             )
 
         ) {
@@ -591,66 +1282,63 @@ document.addEventListener(
 
         }
 
-        // -----------------------------
+
+        // --------------------------------------
         // Edit Order
-        // -----------------------------
+        // --------------------------------------
 
-        const editBtn = e.target.closest(
+        const editBtn =
+            e.target.closest(
+                ".edit-order-btn"
+            );
 
-            ".edit-order-btn"
-
-        );
 
         if (editBtn) {
 
             editOrder(
-
                 editBtn.dataset.id
-
             );
 
             return;
 
         }
 
-        // -----------------------------
+
+        // --------------------------------------
         // Delete Order
-        // -----------------------------
+        // --------------------------------------
 
-        const deleteBtn = e.target.closest(
+        const deleteBtn =
+            e.target.closest(
+                ".delete-order-btn"
+            );
 
-            ".delete-order-btn"
-
-        );
 
         if (deleteBtn) {
 
             deleteOrder(
-
                 deleteBtn.dataset.id
-
             );
 
             return;
 
         }
 
-        // -----------------------------
+
+        // --------------------------------------
         // Invoice
-        // -----------------------------
+        // --------------------------------------
 
-        const invoiceBtn = e.target.closest(
+        const invoiceBtn =
+            e.target.closest(
+                ".invoice-btn"
+            );
 
-            ".invoice-btn"
-
-        );
 
         if (invoiceBtn) {
 
             openInvoice(
-
                 invoiceBtn.dataset.id
-
             );
 
             return;
@@ -660,6 +1348,8 @@ document.addEventListener(
     }
 
 );
+
+
 // ==========================================
 // Initialize Orders Module
 // ==========================================
@@ -670,47 +1360,75 @@ function initializeOrders() {
 
 }
 
+
 // ==========================================
 // Close Modal on Outside Click
 // ==========================================
 
-window.addEventListener("click", function (e) {
+window.addEventListener(
 
-    const orderModal = document.getElementById("orderModal");
+    "click",
 
-    if (orderModal && e.target === orderModal) {
+    function (e) {
 
-        closeOrderModal();
+        const orderModal =
+            document.getElementById(
+                "orderModal"
+            );
+
+
+        if (
+            orderModal &&
+            e.target === orderModal
+        ) {
+
+            closeOrderModal();
+
+        }
 
     }
 
-});
+);
+
 
 // ==========================================
 // ESC Key Support
 // ==========================================
 
-document.addEventListener("keydown", function (e) {
+document.addEventListener(
 
-    if (e.key === "Escape") {
+    "keydown",
 
-        closeOrderModal();
+    function (e) {
+
+        if (e.key === "Escape") {
+
+            closeOrderModal();
+
+        }
 
     }
 
-});
+);
+
 
 // ==========================================
-// Auto Initialize When Orders Page Loads
+// Expose Functions
 // ==========================================
 
-if (typeof window !== "undefined") {
+if (
+    typeof window !== "undefined"
+) {
 
-    window.loadOrders = loadOrders;
+    window.loadOrders =
+        loadOrders;
 
-    window.initializeOrders = initializeOrders;
+    window.initializeOrders =
+        initializeOrders;
 
 }
+
+
 // ==========================================
 // Search Orders
 // ==========================================
@@ -720,40 +1438,84 @@ function searchOrders() {
     filterOrders();
 
 }
+
+
 // ==========================================
 // Filter Orders
 // ==========================================
 
 function filterOrders() {
 
-    const keyword = document
-        .getElementById("orderSearch")
-        .value
-        .toLowerCase();
+    const searchInput =
+        document.getElementById(
+            "orderSearch"
+        );
 
-    const status = document
-        .getElementById("orderStatusFilter")
-        .value;
 
-    const filtered = allOrders.filter(order => {
+    const statusInput =
+        document.getElementById(
+            "orderStatusFilter"
+        );
 
-        const matchesSearch =
 
-            order.id.toLowerCase().includes(keyword) ||
+    const keyword =
+        searchInput
+            ? searchInput.value
+                .toLowerCase()
+                .trim()
+            : "";
 
-            order.customer.toLowerCase().includes(keyword) ||
 
-            order.productName.toLowerCase().includes(keyword);
+    const status =
+        statusInput
+            ? statusInput.value
+            : "All";
 
-        const matchesStatus =
 
-            status === "All" ||
+    const filtered =
+        allOrders.filter(order => {
 
-            order.status === status;
+            const orderId =
+                String(
+                    order.id || ""
+                ).toLowerCase();
 
-        return matchesSearch && matchesStatus;
 
-    });
+            const customer =
+                String(
+                    order.customer || ""
+                ).toLowerCase();
+
+
+            const productName =
+                String(
+                    order.productName || ""
+                ).toLowerCase();
+
+
+            const matchesSearch =
+
+                orderId.includes(keyword) ||
+
+                customer.includes(keyword) ||
+
+                productName.includes(keyword);
+
+
+            const matchesStatus =
+
+                status === "All" ||
+
+                order.status === status;
+
+
+            return (
+                matchesSearch &&
+                matchesStatus
+            );
+
+        });
+
 
     renderOrders(filtered);
 

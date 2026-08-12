@@ -52,6 +52,27 @@ async function createSchema(db) {
     `);
 
     // ==========================================
+    // Order Items
+    // Supports multiple products in one order
+    // ==========================================
+
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS order_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            orderId TEXT NOT NULL,
+            productId TEXT NOT NULL,
+            productName TEXT NOT NULL,
+            quantity REAL NOT NULL,
+            price REAL NOT NULL,
+            total REAL NOT NULL,
+
+            FOREIGN KEY (orderId)
+                REFERENCES orders(id)
+                ON DELETE CASCADE
+        );
+    `);
+
+    // ==========================================
     // Settings
     // ==========================================
 
@@ -80,7 +101,5 @@ async function createSchema(db) {
 }
 
 module.exports = {
-
     createSchema
-
 };

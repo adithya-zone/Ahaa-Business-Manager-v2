@@ -2,7 +2,10 @@
 
     <div class="modal-content invoice-modal">
 
-        <!-- Header -->
+        <!-- ======================================
+             Header
+        ======================================= -->
+
         <div class="modal-header">
 
             <h2>
@@ -13,7 +16,9 @@
 
             </h2>
 
-            <button id="closeInvoiceModal">
+            <button
+                type="button"
+                id="closeInvoiceModal">
 
                 <i class="fa-solid fa-xmark"></i>
 
@@ -21,12 +26,19 @@
 
         </div>
 
-        <!-- Body -->
+
+        <!-- ======================================
+             Invoice Body
+        ======================================= -->
+
         <div class="modal-body">
 
-            <div id="invoiceContent" class="invoice-paper">
+            <div
+                id="invoiceContent"
+                class="invoice-paper">
 
-                <!-- Company Header -->
+
+                <!-- Company Details -->
 
                 <div class="invoice-company">
 
@@ -40,31 +52,40 @@
 
                     <p>
 
-                        <strong>Phone :</strong>
+                        <strong>Phone:</strong>
 
-                        <span id="invoiceCompanyPhone"></span>
+                        <span
+                            id="invoiceCompanyPhone">
+                        </span>
 
                         &nbsp;&nbsp;&nbsp;
 
-                        <strong>Email :</strong>
+                        <strong>Email:</strong>
 
-                        <span id="invoiceCompanyEmail"></span>
+                        <span
+                            id="invoiceCompanyEmail">
+                        </span>
 
                     </p>
 
                 </div>
 
+
                 <hr>
 
-                <!-- Invoice Info -->
 
-                <table class="invoice-info-table">
+                <!-- Invoice Information -->
+
+                <table
+                    class="invoice-info-table">
 
                     <tr>
 
                         <td>
 
-                            <strong>Invoice No</strong>
+                            <strong>
+                                Invoice No
+                            </strong>
 
                         </td>
 
@@ -72,7 +93,9 @@
 
                         <td>
 
-                            <strong>Date</strong>
+                            <strong>
+                                Date
+                            </strong>
 
                         </td>
 
@@ -80,11 +103,14 @@
 
                     </tr>
 
+
                     <tr>
 
                         <td>
 
-                            <strong>Customer</strong>
+                            <strong>
+                                Customer
+                            </strong>
 
                         </td>
 
@@ -92,23 +118,25 @@
 
                         <td>
 
-                            <strong>Status</strong>
+                            <strong>
+                                Status
+                            </strong>
 
                         </td>
 
-                        <td>
-
-                            Paid
-
-                        </td>
+                        <td id="invoiceStatus"></td>
 
                     </tr>
 
                 </table>
 
+
                 <br>
 
-                <!-- Products -->
+
+                <!-- ======================================
+                     Products
+                ======================================= -->
 
                 <table class="invoice-table">
 
@@ -144,27 +172,22 @@
 
                     </thead>
 
-                    <tbody>
 
-                        <tr>
+                    <tbody id="invoiceItems">
 
-                            <td id="invoiceProduct"></td>
-
-                            <td id="invoiceQty"></td>
-
-                            <td id="invoicePrice"></td>
-
-                            <td id="invoiceTotal"></td>
-
-                        </tr>
+                        <!-- Products inserted by invoice.js -->
 
                     </tbody>
 
                 </table>
 
+
                 <br>
 
-                <!-- Total -->
+
+                <!-- ======================================
+                     Totals
+                ======================================= -->
 
                 <table class="invoice-total-table">
 
@@ -178,11 +201,12 @@
 
                         <td id="invoiceTotalAmount">
 
-                            ₹0
+                            ₹0.00
 
                         </td>
 
                     </tr>
+
 
                     <tr>
 
@@ -192,13 +216,14 @@
 
                         </td>
 
-                        <td>
+                        <td id="invoiceGST">
 
                             ₹0.00
 
                         </td>
 
                     </tr>
+
 
                     <tr class="grand-total">
 
@@ -210,13 +235,18 @@
 
                         <td id="invoiceGrandTotal">
 
-                            ₹0
+                            ₹0.00
 
                         </td>
 
                     </tr>
 
                 </table>
+
+
+                <!-- ======================================
+                     Footer Note
+                ======================================= -->
 
                 <div class="invoice-note">
 
@@ -240,18 +270,21 @@
 
                 </div>
 
+
             </div>
 
         </div>
 
-        <!-- Footer -->
+
+        <!-- ======================================
+             Footer Buttons
+        ======================================= -->
 
         <div class="modal-footer">
 
             <button
-
+                type="button"
                 class="btn-secondary"
-
                 id="printInvoiceBtn">
 
                 <i class="fa-solid fa-print"></i>
@@ -260,10 +293,10 @@
 
             </button>
 
+
             <button
-
+                type="button"
                 class="btn-primary"
-
                 id="downloadInvoiceBtn">
 
                 <i class="fa-solid fa-file-pdf"></i>

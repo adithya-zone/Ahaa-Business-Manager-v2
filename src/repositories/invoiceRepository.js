@@ -3,7 +3,7 @@ const BaseRepository = require("./baseRepository");
 class InvoiceRepository extends BaseRepository {
 
     // ======================================
-    // Get Invoice By Order ID
+    // Get Invoice Order
     // ======================================
 
     async getInvoice(orderId) {
@@ -11,32 +11,14 @@ class InvoiceRepository extends BaseRepository {
         return await this.get(
 
             `SELECT
-
                 o.id,
-
                 o.customer,
-
-                o.productId,
-
-                o.productName,
-
-                o.quantity,
-
-                o.total,
-
                 o.status,
-
-                o.createdAt,
-
-                p.price
-
-            FROM orders o
-
-            LEFT JOIN products p
-
-                ON o.productId = p.id
-
-            WHERE o.id = ?`,
+                o.paymentMethod,
+                o.total,
+                o.createdAt
+             FROM orders o
+             WHERE o.id = ?`,
 
             [orderId]
 
@@ -45,14 +27,38 @@ class InvoiceRepository extends BaseRepository {
     }
 
     // ======================================
-    // Get All Settings
+    // Get Invoice Items
+    // ======================================
+
+    async getInvoiceItems(orderId) {
+
+        return await this.all(
+
+            `SELECT
+                productId,
+                productName,
+                quantity,
+                price,
+                total
+             FROM order_items
+             WHERE orderId = ?
+             ORDER BY id ASC`,
+
+            [orderId]
+
+        );
+
+    }
+
+    // ======================================
+    // Get Settings
     // ======================================
 
     async getSettings() {
 
         const rows = await this.all(
 
-            `SELECT key,value
+            `SELECT key, value
              FROM settings`
 
         );
