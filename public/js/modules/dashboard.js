@@ -4,6 +4,13 @@
 
 async function loadDashboard() {
 
+    // Dashboard page not loaded
+    if (!document.getElementById("totalProducts")) {
+
+        return;
+
+    }
+
     await loadDashboardStats();
 
 }
@@ -15,6 +22,13 @@ async function loadDashboard() {
 async function loadDashboardStats() {
 
     try {
+
+        // Dashboard page not loaded
+        if (!document.getElementById("totalProducts")) {
+
+            return;
+
+        }
 
         const result = await ApiService.get("/api/dashboard");
 
@@ -28,23 +42,65 @@ async function loadDashboardStats() {
 
         const data = result.data;
 
-        document.getElementById("totalProducts").textContent =
-            data.totalProducts;
+        const setText = (id, value) => {
 
-        document.getElementById("totalOrders").textContent =
-            data.totalOrders;
+            const element = document.getElementById(id);
 
-        document.getElementById("totalCustomers").textContent =
-            data.totalCustomers;
+            if (element) {
 
-        document.getElementById("totalRevenue").textContent =
-            `₹${Number(data.totalRevenue).toLocaleString()}`;
+                element.textContent = value;
 
-        document.getElementById("todaySales").textContent =
-            `₹${Number(data.todaySales).toLocaleString()}`;
+            }
 
-        document.getElementById("monthlySales").textContent =
-            `₹${Number(data.monthlySales).toLocaleString()}`;
+        };
+
+        setText(
+
+            "totalProducts",
+
+            data.totalProducts
+
+        );
+
+        setText(
+
+            "totalOrders",
+
+            data.totalOrders
+
+        );
+
+        setText(
+
+            "totalCustomers",
+
+            data.totalCustomers
+
+        );
+
+        setText(
+
+            "totalRevenue",
+
+            `₹${Number(data.totalRevenue).toLocaleString()}`
+
+        );
+
+        setText(
+
+            "todaySales",
+
+            `₹${Number(data.todaySales).toLocaleString()}`
+
+        );
+
+        setText(
+
+            "monthlySales",
+
+            `₹${Number(data.monthlySales).toLocaleString()}`
+
+        );
 
     }
 
@@ -52,7 +108,13 @@ async function loadDashboardStats() {
 
         console.error(err);
 
-        Toast.show("Unable to load dashboard.", "error");
+        Toast.show(
+
+            "Unable to load dashboard.",
+
+            "error"
+
+        );
 
     }
 

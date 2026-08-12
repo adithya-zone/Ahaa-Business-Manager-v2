@@ -673,3 +673,711 @@ body{
     min-width: 80px;
 
 }
+/* ==========================================
+   DARK THEME
+========================================== */
+
+body.dark-theme {
+
+    background: #111827;
+    color: #f3f4f6;
+
+}
+
+/* Main Layout */
+
+body.dark-theme .main {
+
+    background: #111827;
+
+}
+
+/* Sidebar */
+
+body.dark-theme #sidebar,
+body.dark-theme .sidebar {
+
+    background: #1f2937;
+    color: #ffffff;
+
+}
+
+body.dark-theme .sidebar a,
+body.dark-theme .menu a {
+
+    color: #d1d5db;
+
+}
+
+body.dark-theme .sidebar a:hover,
+body.dark-theme .menu a:hover,
+body.dark-theme .menu a.active {
+
+    background: #374151;
+    color: #ffffff;
+
+}
+
+/* Topbar */
+
+body.dark-theme #topbar,
+body.dark-theme .topbar {
+
+    background: #1f2937;
+    color: #ffffff;
+    border-bottom: 1px solid #374151;
+
+}
+
+/* Cards */
+
+body.dark-theme .card,
+body.dark-theme .dashboard-card,
+body.dark-theme .stat-card,
+body.dark-theme .table-container,
+body.dark-theme .modal-content {
+
+    background: #1f2937;
+    color: #ffffff;
+    border: 1px solid #374151;
+
+}
+
+/* Tables */
+
+body.dark-theme table {
+
+    color: #ffffff;
+
+}
+
+body.dark-theme table thead {
+
+    background: #374151;
+
+}
+
+body.dark-theme table tbody tr {
+
+    background: #1f2937;
+
+}
+
+body.dark-theme table tbody tr:nth-child(even) {
+
+    background: #273549;
+
+}
+
+body.dark-theme table tbody tr:hover {
+
+    background: #374151;
+
+}
+
+/* Inputs */
+
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+
+    background: #374151;
+    color: #ffffff;
+    border: 1px solid #4b5563;
+
+}
+
+body.dark-theme input::placeholder,
+body.dark-theme textarea::placeholder {
+
+    color: #cbd5e1;
+
+}
+
+/* Buttons */
+
+body.dark-theme .btn-primary {
+
+    background: #2563eb;
+
+}
+
+body.dark-theme .btn-secondary {
+
+    background: #4b5563;
+    color: #ffffff;
+
+}
+
+body.dark-theme .btn-danger {
+
+    background: #dc2626;
+
+}
+
+/* Modal */
+
+body.dark-theme .modal {
+
+    background: rgba(0,0,0,0.65);
+
+}
+
+/* Invoice */
+
+body.dark-theme #invoiceContent {
+
+    background: #ffffff;
+    color: #000000;
+
+}
+
+/* Scrollbar */
+
+body.dark-theme ::-webkit-scrollbar {
+
+    width: 10px;
+
+}
+
+body.dark-theme ::-webkit-scrollbar-track {
+
+    background: #1f2937;
+
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb {
+
+    background: #4b5563;
+    border-radius: 6px;
+
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+
+    background: #6b7280;
+
+}
+/* ==========================================
+   DARK THEME - TEXT FIXES
+========================================== */
+
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme h6,
+body.dark-theme .page-title,
+body.dark-theme .products-header h2,
+body.dark-theme .orders-page h2,
+body.dark-theme .customers-page h2,
+body.dark-theme .reports-page h2,
+body.dark-theme .settings-page h2 {
+
+    color: #ffffff !important;
+
+}
+
+body.dark-theme p,
+body.dark-theme span,
+body.dark-theme label,
+body.dark-theme strong {
+
+    color: #e5e7eb;
+
+}
+
+body.dark-theme th {
+
+    color: #ffffff;
+
+}
+
+body.dark-theme td {
+
+    color: #f3f4f6;
+
+}
+
+body.dark-theme .table-container {
+
+    background: #1f2937;
+
+}
+
+body.dark-theme .product-table thead tr {
+
+    background: #374151;
+
+}
+
+body.dark-theme .product-table tbody tr {
+
+    background: #1f2937;
+
+}
+
+body.dark-theme .product-table tbody tr:hover {
+
+    background: #374151;
+
+}
+/* ==========================================
+   DARK THEME - TABLE HEADER FIX
+========================================== */
+
+body.dark-theme table thead,
+body.dark-theme table thead tr,
+body.dark-theme .product-table thead,
+body.dark-theme .product-table thead tr {
+
+    background: #374151 !important;
+
+}
+
+body.dark-theme table thead th,
+body.dark-theme .product-table thead th {
+
+    color: #ffffff !important;
+    background: #374151 !important;
+    border-color: #4b5563 !important;
+
+}
+
+body.dark-theme table tbody td,
+body.dark-theme .product-table tbody td {
+
+    color: #f9fafb !important;
+
+}
+
+body.dark-theme table tbody tr {
+
+    background: #1f2937 !important;
+
+}
+
+body.dark-theme table tbody tr:nth-child(even) {
+
+    background: #273549 !important;
+
+}
+
+body.dark-theme table tbody tr:hover {
+
+    background: #374151 !important;
+
+}
+/* ==========================================
+   DARK THEME - STATUS BADGES
+========================================== */
+
+body.dark-theme .status-badge {
+
+    color: #ffffff !important;
+    font-weight: 600;
+
+}
+
+body.dark-theme .status-pending {
+
+    background: #ca8a04 !important;
+    color: #ffffff !important;
+
+}
+
+body.dark-theme .status-completed {
+
+    background: #16a34a !important;
+    color: #ffffff !important;
+
+}
+
+body.dark-theme .status-cancelled {
+
+    background: #dc2626 !important;
+    color: #ffffff !important;
+
+}
+/* ==========================================
+   LOGIN PAGE
+========================================== */
+
+#loginContainer {
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background: #f5f7fb;
+
+}
+
+
+/* ==========================================
+   Login Card
+========================================== */
+
+.login-page {
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.login-card {
+
+    width: 100%;
+
+    max-width: 420px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    padding: 40px;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* ==========================================
+   Login Header
+========================================== */
+
+.login-header {
+
+    text-align: center;
+
+    margin-bottom: 30px;
+
+}
+
+
+.login-icon {
+
+    width: 64px;
+
+    height: 64px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 26px;
+
+}
+
+
+.login-header h1 {
+
+    margin: 0;
+
+    font-size: 24px;
+
+    font-weight: 600;
+
+}
+
+
+.login-header p {
+
+    margin: 8px 0 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+
+}
+
+
+/* ==========================================
+   Login Form
+========================================== */
+
+.login-form-group {
+
+    margin-bottom: 20px;
+
+}
+
+
+.login-form-group label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+}
+
+
+.login-input-wrapper {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+
+.login-input-wrapper > i {
+
+    position: absolute;
+
+    left: 14px;
+
+    color: #9ca3af;
+
+}
+
+
+.login-input-wrapper input {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px 44px 12px 42px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    transition: border-color 0.2s;
+
+}
+
+
+.login-input-wrapper input:focus {
+
+    border-color: #2563eb;
+
+}
+
+
+/* ==========================================
+   Password Toggle
+========================================== */
+
+.password-toggle {
+
+    position: absolute;
+
+    right: 10px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #6b7280;
+
+    cursor: pointer;
+
+    padding: 6px;
+
+}
+
+
+/* ==========================================
+   Login Error
+========================================== */
+
+.login-error {
+
+    margin-bottom: 16px;
+
+    padding: 10px 12px;
+
+    border-radius: 8px;
+
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+    font-size: 13px;
+
+}
+
+
+/* ==========================================
+   Login Button
+========================================== */
+
+.login-btn {
+
+    width: 100%;
+
+    padding: 13px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: opacity 0.2s;
+
+}
+
+
+.login-btn:hover {
+
+    opacity: 0.9;
+
+}
+
+
+.login-btn:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ==========================================
+   Login Footer
+========================================== */
+
+.login-footer {
+
+    text-align: center;
+
+    margin-top: 25px;
+
+    color: #9ca3af;
+
+    font-size: 12px;
+
+}
+
+
+/* ==========================================
+   Dark Theme Login
+========================================== */
+
+body.dark-theme #loginContainer {
+
+    background: #111827;
+
+}
+
+
+body.dark-theme .login-card {
+
+    background: #1f2937;
+
+    color: #f9fafb;
+
+}
+
+
+body.dark-theme .login-header p {
+
+    color: #9ca3af;
+
+}
+
+
+body.dark-theme .login-form-group label {
+
+    color: #f3f4f6;
+
+}
+
+
+body.dark-theme .login-input-wrapper input {
+
+    background: #111827;
+
+    border-color: #374151;
+
+    color: #f9fafb;
+
+}
+
+
+body.dark-theme .login-input-wrapper input::placeholder {
+
+    color: #6b7280;
+
+}
+
+
+/* ==========================================
+   Mobile Login
+========================================== */
+
+@media (max-width: 480px) {
+
+    .login-card {
+
+        padding: 28px 22px;
+
+        border-radius: 12px;
+
+    }
+
+    .login-header h1 {
+
+        font-size: 21px;
+
+    }
+
+}

@@ -197,33 +197,57 @@ function bindMenu() {
 
 async function init() {
 
+    // Load saved theme first
+    try {
+
+        const result = await ApiService.get("/api/settings");
+
+        if (result.success && result.data.theme === "dark") {
+
+            document.body.classList.add("dark-theme");
+
+        }
+
+    } catch (err) {
+
+        console.error("Theme Load Error:", err);
+
+    }
+
     await loadComponent(
         "sidebar",
         "components/sidebar.html"
     );
-
     await loadComponent(
         "topbar",
         "components/topbar.html"
     );
 
+    if (typeof bindLogoutButton === "function") {
+
+    bindLogoutButton();
+
+}
     await loadComponent(
         "modalContainer",
         "components/productModal.html"
     );
 
-    // Load Customer Modal
+    // Customer Modal
     document.getElementById("modalContainer").innerHTML +=
         await (await fetch("components/customerModal.html")).text();
 
+    // Order Modal
     await loadComponent(
         "orderModalContainer",
         "components/orderModal.html"
     );
+
+    // Invoice Modal
     await loadComponent(
-    "invoiceModalContainer",
-    "components/invoiceModal.html"
-);
+        "invoiceModalContainer",
+        "components/invoiceModal.html"
+    );
 
     bindMenu();
 
@@ -231,4 +255,43 @@ async function init() {
 
 }
 
-window.onload = init;
+// ==========================================
+// Application Startup
+// ==========================================
+
+async function startApplication() {
+
+    const authenticated =
+        await checkAuthentication();
+
+    if (!authenticated) {
+
+        await showLoginPage();
+
+        return;
+
+    }
+
+    await loadERPApplication();
+
+}
+
+window.onload = startApplication;
+
+// ==========================================
+// Apply Theme
+// ==========================================
+
+function applyTheme(theme) {
+
+    if (theme === "dark") {
+
+        document.body.classList.add("dark-theme");
+
+    } else {
+
+        document.body.classList.remove("dark-theme");
+
+    }
+
+}

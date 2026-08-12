@@ -3,27 +3,93 @@ const { open } = require("sqlite");
 const path = require("path");
 const fs = require("fs");
 
+const { createSchema } = require("../database/schema");
+const { seedDatabase } = require("../database/seed");
+
 let db = null;
+
+// ==========================================
+// Database Directory
+// ==========================================
+
+function getDatabaseFolder() {
+
+    // If SQLITE_DB_DIR is provided, use it.
+    if (process.env.SQLITE_DB_DIR) {
+
+        return process.env.SQLITE_DB_DIR;
+
+    }
+
+    // Production
+    if (process.env.NODE_ENV === "production") {
+
+        return "/data";
+
+    }
+
+    // Local development
+    return path.join(
+        __dirname,
+        "../../database"
+    );
+
+}
+
+
+// ==========================================
+// Initialize Database
+// ==========================================
 
 async function initializeDatabase() {
 
     if (db) {
+
         return db;
+
     }
 
     try {
 
-        const dbFolder = path.join(__dirname, "../../database");
+        const dbFolder =
+            getDatabaseFolder();
 
-        // Create database folder if it doesn't exist
+        // Create database directory
+        // if it doesn't already exist.
+
         if (!fs.existsSync(dbFolder)) {
-            fs.mkdirSync(dbFolder, { recursive: true });
-            console.log("📁 Database folder created");
+
+            fs.mkdirSync(
+                dbFolder,
+                {
+                    recursive: true
+                }
+            );
+
+            console.log(
+                "📁 Database folder created:",
+                dbFolder
+            );
+
         }
 
-        const dbPath = path.join(dbFolder, "ahaa.db");
+        // ==========================================
+        // Database File
+        // ==========================================
 
-        console.log("📂 Database Path:", dbPath);
+        const dbPath = path.join(
+            dbFolder,
+            "ahaa.db"
+        );
+
+        console.log(
+            "📂 Database Path:",
+            dbPath
+        );
+
+        // ==========================================
+        // Connect SQLite
+        // ==========================================
 
         db = await open({
 
@@ -33,80 +99,48 @@ async function initializeDatabase() {
 
         });
 
-        console.log("✅ SQLite Connected");
-
-        await db.exec("PRAGMA foreign_keys = ON;");
-
-        // ==========================================
-        // Products
-        // ==========================================
-
-        await db.exec(`
-            CREATE TABLE IF NOT EXISTS products (
-                id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                category TEXT,
-                price REAL,
-                stock INTEGER DEFAULT 0,
-                status TEXT DEFAULT 'Active',
-                createdAt TEXT
-            );
-        `);
+        console.log(
+            "✅ SQLite Connected"
+        );
 
         // ==========================================
-        // Customers
+        // Foreign Keys
         // ==========================================
 
-        await db.exec(`
-            CREATE TABLE IF NOT EXISTS customers (
-                id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                phone TEXT,
-                email TEXT,
-                city TEXT,
-                address TEXT,
-                status TEXT DEFAULT 'Active',
-                createdAt TEXT
-            );
-        `);
+        await db.exec(
+            "PRAGMA foreign_keys = ON;"
+        );
 
         // ==========================================
-        // Orders
+        // Create Schema
         // ==========================================
 
-        await db.exec(`
-            CREATE TABLE IF NOT EXISTS orders (
-                id TEXT PRIMARY KEY,
-                customer TEXT,
-                productId TEXT,
-                productName TEXT,
-                quantity INTEGER,
-                total REAL,
-                status TEXT,
-                paymentMethod TEXT DEFAULT 'Cash',
-                createdAt TEXT
-            );
-        `);
+        await createSchema(db);
+
+        console.log(
+            "✅ Tables Created"
+        );
 
         // ==========================================
-        // Settings
+        // Seed Database
         // ==========================================
 
-        await db.exec(`
-            CREATE TABLE IF NOT EXISTS settings (
-                key TEXT PRIMARY KEY,
-                value TEXT
-            );
-        `);
+        await seedDatabase(db);
 
-        console.log("✅ Tables Created");
-        console.log("🎉 Database Ready");
+        console.log(
+            "🎉 Database Ready"
+        );
 
         return db;
 
-    } catch (err) {
+    }
 
-        console.error("❌ DATABASE ERROR");
+    catch (err) {
+
+        console.error(
+            "❌ DATABASE ERROR"
+        );
+
         console.error(err);
 
         throw err;
@@ -114,6 +148,11 @@ async function initializeDatabase() {
     }
 
 }
+
+
+// ==========================================
+// Get Database
+// ==========================================
 
 async function getDatabase() {
 
@@ -126,6 +165,11 @@ async function getDatabase() {
     return db;
 
 }
+
+
+// ==========================================
+// Export
+// ==========================================
 
 module.exports = {
 

@@ -16,7 +16,7 @@ async function loadSettings() {
 
         }
 
-        const settings = result.data;
+        const settings = result.data || {};
 
         document.getElementById("themeSelect").value =
             settings.theme || "light";
@@ -36,6 +36,13 @@ async function loadSettings() {
         document.getElementById("companyAddress").value =
             settings.companyAddress || "";
 
+        // Apply saved theme immediately
+        if (typeof applyTheme === "function") {
+
+            applyTheme(settings.theme || "light");
+
+        }
+
     }
 
     catch (err) {
@@ -47,6 +54,10 @@ async function loadSettings() {
     }
 
 }
+
+// ==========================================
+// Save Settings
+// ==========================================
 
 async function saveSettings() {
 
@@ -90,6 +101,13 @@ async function saveSettings() {
 
         }
 
+        // Apply theme instantly
+        if (typeof applyTheme === "function") {
+
+            applyTheme(payload.theme);
+
+        }
+
         Toast.show(
 
             "Settings saved successfully.",
@@ -104,11 +122,21 @@ async function saveSettings() {
 
         console.error(err);
 
-        Toast.show("Unable to save settings.", "error");
+        Toast.show(
+
+            "Unable to save settings.",
+
+            "error"
+
+        );
 
     }
 
 }
+
+// ==========================================
+// Events
+// ==========================================
 
 document.addEventListener("click", function (e) {
 

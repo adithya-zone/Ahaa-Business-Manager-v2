@@ -20,29 +20,68 @@
 
     </div>
 
-    <!-- Search -->
+    <!-- Search & Filters -->
 
     <div
         style="
             margin:15px 0;
             display:flex;
-            gap:10px;
+            gap:12px;
             align-items:center;
+            flex-wrap:wrap;
         ">
 
         <input
             id="orderSearch"
             type="text"
-            placeholder="🔍 Search by Order ID, Customer or Product..."
+            placeholder="🔍 Search Order ID, Customer or Product..."
             onkeyup="searchOrders()"
             style="
-                width:350px;
+                width:320px;
                 padding:10px 14px;
                 border:1px solid #dcdcdc;
                 border-radius:8px;
                 outline:none;
                 font-size:14px;
             ">
+
+        <select
+            id="orderStatusFilter"
+            onchange="filterOrders()"
+            style="
+                padding:10px 14px;
+                border:1px solid #dcdcdc;
+                border-radius:8px;
+                outline:none;
+                font-size:14px;
+                min-width:180px;
+            ">
+
+            <option value="All">
+
+                All Status
+
+            </option>
+
+            <option value="Pending">
+
+                Pending
+
+            </option>
+
+            <option value="Completed">
+
+                Completed
+
+            </option>
+
+            <option value="Cancelled">
+
+                Cancelled
+
+            </option>
+
+        </select>
 
     </div>
 

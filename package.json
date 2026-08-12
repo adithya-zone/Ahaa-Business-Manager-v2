@@ -1,21 +1,31 @@
 {
   "name": "ahaa-business-manager-v2",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Ahaa Business Manager ERP",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "erp",
+    "express",
+    "sqlite",
+    "business-manager"
+  ],
+  "author": "Sunny",
+  "license": "MIT",
   "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-sqlite3": "^0.9.18",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^6.0.1"
   },

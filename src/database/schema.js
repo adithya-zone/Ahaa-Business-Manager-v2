@@ -1,0 +1,86 @@
+async function createSchema(db) {
+
+    // ==========================================
+    // Products
+    // ==========================================
+
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS products (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            category TEXT,
+            price REAL,
+            stock INTEGER DEFAULT 0,
+            status TEXT DEFAULT 'Active',
+            createdAt TEXT
+        );
+    `);
+
+    // ==========================================
+    // Customers
+    // ==========================================
+
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS customers (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            phone TEXT,
+            email TEXT,
+            city TEXT,
+            address TEXT,
+            status TEXT DEFAULT 'Active',
+            createdAt TEXT
+        );
+    `);
+
+    // ==========================================
+    // Orders
+    // ==========================================
+
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS orders (
+            id TEXT PRIMARY KEY,
+            customer TEXT,
+            productId TEXT,
+            productName TEXT,
+            quantity INTEGER,
+            total REAL,
+            status TEXT,
+            paymentMethod TEXT DEFAULT 'Cash',
+            createdAt TEXT
+        );
+    `);
+
+    // ==========================================
+    // Settings
+    // ==========================================
+
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS settings (
+            key TEXT PRIMARY KEY,
+            value TEXT
+        );
+    `);
+
+    // ==========================================
+    // Users
+    // ==========================================
+
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT DEFAULT 'Admin',
+            status TEXT DEFAULT 'Active',
+            createdAt TEXT
+        );
+    `);
+
+}
+
+module.exports = {
+
+    createSchema
+
+};

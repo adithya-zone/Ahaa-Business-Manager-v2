@@ -717,20 +717,43 @@ if (typeof window !== "undefined") {
 
 function searchOrders() {
 
+    filterOrders();
+
+}
+// ==========================================
+// Filter Orders
+// ==========================================
+
+function filterOrders() {
+
     const keyword = document
         .getElementById("orderSearch")
         .value
         .toLowerCase();
 
-    const filtered = allOrders.filter(order =>
+    const status = document
+        .getElementById("orderStatusFilter")
+        .value;
 
-        order.id.toLowerCase().includes(keyword) ||
+    const filtered = allOrders.filter(order => {
 
-        order.customer.toLowerCase().includes(keyword) ||
+        const matchesSearch =
 
-        order.productName.toLowerCase().includes(keyword)
+            order.id.toLowerCase().includes(keyword) ||
 
-    );
+            order.customer.toLowerCase().includes(keyword) ||
+
+            order.productName.toLowerCase().includes(keyword);
+
+        const matchesStatus =
+
+            status === "All" ||
+
+            order.status === status;
+
+        return matchesSearch && matchesStatus;
+
+    });
 
     renderOrders(filtered);
 
